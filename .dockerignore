@@ -1,0 +1,8 @@
+.git
+.gitignore
+README.md
+Dockerfile
+target/*
+!.jar          # keep the final jar
+mvnw
+mvnw.cmd
