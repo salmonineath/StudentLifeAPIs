@@ -1,28 +1,25 @@
 package com.studentlife.StudentLifeAPIs.Entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 
 @Entity
-@Table(name = "roles")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class Roles {
+@Table(name = "notes")
+public class notes {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    private String title;
+    private String content;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private Users user;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
