@@ -1,6 +1,9 @@
 package com.studentlife.StudentLifeAPIs.Exception;
 
 import com.studentlife.StudentLifeAPIs.DTO.Response.ApiResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -9,7 +12,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.Objects;
 
 @RestControllerAdvice
-public class GlobalException {
+public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     // =========================================
     // DEV + PROD: Custom API exception
@@ -36,9 +41,12 @@ public class GlobalException {
             org.springframework.web.bind.MethodArgumentNotValidException ex) {
 
         // DEV: return first validation message (simple & clear)
-        String message = Objects.requireNonNull(
-                ex.getBindingResult().getFieldError()
-        ).getDefaultMessage();
+        String message = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .findFirst()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .orElse("Validation failed");
 
         // PROD (OPTIONAL): return generic validation error
         // String message = "Invalid request data";
@@ -61,8 +69,8 @@ public class GlobalException {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<String>> handleUnexpected(Exception ex) {
 
-        // DEV ONLY (OPTIONAL): log stack trace
-        ex.printStackTrace();
+        // log stack trace
+        log.error("Unexpected error occurred", ex);
 
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)

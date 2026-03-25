@@ -15,5 +15,4 @@ public class RegisterRequest {
     private String university;
     private String major;
     private String academicYear;
-    private List<Long> roles;
 }

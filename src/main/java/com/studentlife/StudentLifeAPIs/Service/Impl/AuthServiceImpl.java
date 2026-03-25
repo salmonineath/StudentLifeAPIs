@@ -160,17 +160,9 @@ public class AuthServiceImpl implements AuthService {
         // ========================
         // ASSIGN ROLES TO USER
         // ========================
-        if (request.getRoles() != null && !request.getRoles().isEmpty()) {
-            List<Roles> roles = roleRepository.findAllById(request.getRoles());
-            if (roles.size() != request.getRoles().size()) {
-                throw badRequest("Roles not found.");
-            }
-            user.setRoles(new HashSet<>(roles));
-        } else {
-            Roles defaultRole = roleRepository.findByName("student")
-                    .orElseThrow(() -> notFound("Default role not found."));
-            user.setRoles(new HashSet<>(Set.of(defaultRole)));
-        }
+        Roles defaultRole = roleRepository.findByName("student")
+                .orElseThrow(() -> notFound("Default role not found."));
+        user.setRoles(new HashSet<>(Set.of(defaultRole)));
 
         Users savedUser = userRepository.save(user);
 

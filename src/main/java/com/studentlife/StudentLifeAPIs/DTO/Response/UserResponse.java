@@ -20,7 +20,6 @@ public class UserResponse {
     private String university;
     private String major;
     private String academic_year;
-    private Boolean is_active;
     private Set<String> roles;
     private Instant createdAt;
     private Instant updatedAt;

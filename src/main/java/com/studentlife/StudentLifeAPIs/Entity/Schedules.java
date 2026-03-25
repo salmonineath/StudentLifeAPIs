@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +20,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class schedules {
+public class Schedules {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,11 +36,11 @@ public class schedules {
     @Column(name = "day_of_week", nullable = false)
     private int dayOfWeek;
 
-    @NotBlank
+    @NotNull
     @Column(name = "start_time", nullable = false)
     private Instant startTime;
 
-    @NotBlank
+    @NotNull
     @Column(name = "end_time", nullable = false)
     private Instant endTime;
 

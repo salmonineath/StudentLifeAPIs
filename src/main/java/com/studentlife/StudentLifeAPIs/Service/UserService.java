@@ -1,7 +1,6 @@
 package com.studentlife.StudentLifeAPIs.Service;
 
 
-import com.studentlife.StudentLifeAPIs.DTO.Request.UpdateUserRolesRequest;
 import com.studentlife.StudentLifeAPIs.DTO.Request.UserCreateRequest;
 import com.studentlife.StudentLifeAPIs.DTO.Request.UserUpdateRequest;
 import com.studentlife.StudentLifeAPIs.DTO.Response.PaginatedResponse;
