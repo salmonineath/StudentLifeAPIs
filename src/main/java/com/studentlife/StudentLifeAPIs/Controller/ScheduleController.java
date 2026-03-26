@@ -3,6 +3,7 @@ package com.studentlife.StudentLifeAPIs.Controller;
 import com.studentlife.StudentLifeAPIs.DTO.Request.OneTimeScheduleRequest;
 import com.studentlife.StudentLifeAPIs.DTO.Request.RecurringScheduleRequest;
 import com.studentlife.StudentLifeAPIs.DTO.Request.ScheduleFilter;
+import com.studentlife.StudentLifeAPIs.DTO.Request.ScheduleUpdateRequest;
 import com.studentlife.StudentLifeAPIs.DTO.Response.ApiResponse;
 import com.studentlife.StudentLifeAPIs.DTO.Response.ScheduleResponse;
 import com.studentlife.StudentLifeAPIs.Service.ScheduleService;
@@ -58,5 +59,13 @@ public class ScheduleController {
             @RequestBody @Valid RecurringScheduleRequest request
             ) {
         return ResponseEntity.status(201).body(scheduleService.createRecurring(request));
+    }
+
+    @PatchMapping("/schedule/{scheduleId}")
+    public ResponseEntity<ApiResponse<?>> updatedSchedule(
+            @PathVariable Long scheduleId,
+            @RequestBody ScheduleUpdateRequest request
+            ) {
+        return ResponseEntity.ok(scheduleService.updateSchedule(scheduleId, request));
     }
 }
