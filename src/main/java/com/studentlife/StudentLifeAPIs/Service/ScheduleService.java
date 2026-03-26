@@ -10,8 +10,6 @@ import com.studentlife.StudentLifeAPIs.DTO.Response.ScheduleResponse;
 
 public interface ScheduleService {
 
-//    ApiResponse<PaginatedResponse<ScheduleResponse>> getAllSchedule(int page, int size);
-
     ApiResponse<PaginatedResponse<ScheduleResponse>> getByUserId(
             Long userId,
             int page,
