@@ -1,12 +1,12 @@
 package com.studentlife.StudentLifeAPIs.Service.Impl;
 
-import com.studentlife.StudentLifeAPIs.DTO.Request.ScheduleCreateRequest;
-import com.studentlife.StudentLifeAPIs.DTO.Request.ScheduleFilter;
+import com.studentlife.StudentLifeAPIs.DTO.Request.*;
 import com.studentlife.StudentLifeAPIs.DTO.Response.ApiResponse;
 import com.studentlife.StudentLifeAPIs.DTO.Response.PaginatedResponse;
 import com.studentlife.StudentLifeAPIs.DTO.Response.ScheduleResponse;
 import com.studentlife.StudentLifeAPIs.Entity.Schedules;
 import com.studentlife.StudentLifeAPIs.Entity.Users;
+import com.studentlife.StudentLifeAPIs.Enum.ScheduleType;
 import com.studentlife.StudentLifeAPIs.Mapper.ScheduleMapper;
 import com.studentlife.StudentLifeAPIs.Repository.ScheduleRepository;
 import com.studentlife.StudentLifeAPIs.Repository.UserRepository;
@@ -22,6 +22,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 import static com.studentlife.StudentLifeAPIs.Exception.ErrorsExceptionFactory.notFound;
@@ -92,29 +94,94 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public ApiResponse<?> createSchedule(ScheduleCreateRequest request) {
+    public ApiResponse<ScheduleResponse> createOneTime(OneTimeScheduleRequest request) {
+
+        if (request.getStartTime().isAfter(request.getEndTime())) {
+            throw validation("Start time must be before end time");
+        }
+
+        Users user = authUtil.getAuthenticatedUser();
+
+        Schedules schedule = scheduleMapper.toEntityFromOneTime(request);
+        schedule.setUser(user);
+        scheduleRepository.save(schedule);
+
+        return new ApiResponse<>(
+                201,
+                true,
+                "Create schedule successfully.",
+                scheduleMapper.toResponse(schedule)
+        );
+    }
+
+    @Override
+    public ApiResponse<ScheduleResponse> createRecurring(RecurringScheduleRequest request) {
 
         if (request.getStartTime().isAfter(request.getEndTime())) {
             throw validation("Start time must be before end time.");
         }
 
-        Long userId = authUtil.getAuthenticatedUser().getId();
+        Users user = authUtil.getAuthenticatedUser();
 
-        Users user = userRepository.findById(userId)
-                .orElseThrow(() -> notFound("User not found."));
-
-        Schedules schedule = scheduleMapper.toScheduleEntityCreate(request);
+        Schedules schedule = scheduleMapper.toEntityFromRecurring(request);
         schedule.setUser(user);
-
         scheduleRepository.save(schedule);
-
-        ScheduleResponse scheduleResponse = scheduleMapper.toResponse(schedule);
 
         return new ApiResponse<>(
                 201,
                 true,
-                "Create Schedule successfully.",
-                scheduleResponse
+                "Create schedule successfully.",
+                scheduleMapper.toResponse(schedule)
+        );
+    }
+
+    @Override
+    public ApiResponse<ScheduleResponse> updateSchedule(Long scheduleId, ScheduleUpdateRequest request) {
+
+        Schedules schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> notFound("Schedule not found."));
+
+        if (request.getTitle() != null) schedule.setTitle(request.getTitle());
+        if (request.getDescription() != null) schedule.setDescription(request.getDescription());
+        if (request.getLocation() != null) schedule.setLocation(request.getLocation());
+
+        if (schedule.getType() == ScheduleType.ONE_TIME) {
+            LocalDateTime start = request.getStartTime() != null ? request.getStartTime() : schedule.getStartTime();
+            LocalDateTime end = request.getEndTime() != null ? request.getEndTime() : schedule.getEndTime();
+            if (start.isAfter(end)) throw validation("Start time must be before end time.");
+            schedule.setStartTime(start);
+            schedule.setEndTime(end);
+        } else {
+            LocalTime start = request.getRecurringStartTime() != null
+                    ? request.getRecurringStartTime()
+                    : schedule.getRecurringStartTime();
+
+            LocalTime end = request.getRecurringEndTime() != null
+                    ? request.getRecurringEndTime()
+                    : schedule.getRecurringEndTime();
+
+            // Guard: both must be non-null before comparison
+            if (start == null || end == null) {
+                throw validation("Recurring start time and end time are required.");
+            }
+
+            if (start.isAfter(end)) {
+                throw validation("Start time must be before end time.");
+            }
+
+            schedule.setRecurringStartTime(start);
+            schedule.setRecurringEndTime(end);
+
+            if (request.getDayOfWeek() != null) schedule.setDayOfWeek(request.getDayOfWeek());
+        }
+
+        scheduleRepository.save(schedule);
+
+        return new ApiResponse<>(
+                200,
+                true,
+                "Update schedule successfully.",
+                scheduleMapper.toResponse(schedule)
         );
     }
 }

@@ -1,12 +1,12 @@
 package com.studentlife.StudentLifeAPIs.Service;
 
-import com.studentlife.StudentLifeAPIs.DTO.Request.ScheduleCreateRequest;
+import com.studentlife.StudentLifeAPIs.DTO.Request.OneTimeScheduleRequest;
+import com.studentlife.StudentLifeAPIs.DTO.Request.RecurringScheduleRequest;
 import com.studentlife.StudentLifeAPIs.DTO.Request.ScheduleFilter;
+import com.studentlife.StudentLifeAPIs.DTO.Request.ScheduleUpdateRequest;
 import com.studentlife.StudentLifeAPIs.DTO.Response.ApiResponse;
 import com.studentlife.StudentLifeAPIs.DTO.Response.PaginatedResponse;
 import com.studentlife.StudentLifeAPIs.DTO.Response.ScheduleResponse;
-
-import java.util.List;
 
 public interface ScheduleService {
 
@@ -21,5 +21,9 @@ public interface ScheduleService {
 
     ApiResponse<ScheduleResponse> getById(Long scheduleId);
 
-    ApiResponse<?> createSchedule(ScheduleCreateRequest request);
+    ApiResponse<ScheduleResponse> createOneTime(OneTimeScheduleRequest request);
+
+    ApiResponse<ScheduleResponse> createRecurring(RecurringScheduleRequest request);
+
+    ApiResponse<ScheduleResponse> updateSchedule(Long scheduleId, ScheduleUpdateRequest request);
 }
