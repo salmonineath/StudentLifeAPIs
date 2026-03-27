@@ -1,6 +1,7 @@
 package com.studentlife.StudentLifeAPIs.Entity;
 
 import com.studentlife.StudentLifeAPIs.Enum.AssignmentStatus;
+import com.studentlife.StudentLifeAPIs.Enum.Priority;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -20,7 +21,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class assignments {
+public class Assignments {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,6 +44,10 @@ public class assignments {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AssignmentStatus status = AssignmentStatus.PENDING;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Priority priority = Priority.MEDIUM;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
