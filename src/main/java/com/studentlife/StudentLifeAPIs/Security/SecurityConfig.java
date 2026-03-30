@@ -77,13 +77,14 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         // allow all origin to access this server
-        config.addAllowedOriginPattern("*");
-        config.setAllowCredentials(true);
+//        config.addAllowedOriginPattern("*");
+        config.setAllowedOrigins(List.of(
+                "http://localhost:3000",
+                "http://localhost:5173",
+                "https://your-frontend-domain.com"
+        ));
 
-//        config.setAllowedOrigins(List.of(
-//                "http://localhost:3000",
-//                "http://localhost:5173"
-//        ));
+        config.setAllowCredentials(true);
 
         String[] allowedMethods = {
                 "GET", "POST", "PUT", "DELETE", "OPTIONS"
@@ -99,8 +100,6 @@ public class SecurityConfig {
 //        config.setAllowedHeaders(List.of(
 //                "Authorization", "Content-Type"
 //        ));
-
-        config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
