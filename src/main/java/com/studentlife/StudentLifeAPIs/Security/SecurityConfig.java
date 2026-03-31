@@ -81,8 +81,10 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of(
                 "http://localhost:3000",
                 "http://localhost:5173",
-                "https://your-frontend-domain.com"
+                "https://studentlifeapis.onrender.com"
         ));
+
+        config.setAllowCredentials(true);
 
         config.setAllowCredentials(true);
 
