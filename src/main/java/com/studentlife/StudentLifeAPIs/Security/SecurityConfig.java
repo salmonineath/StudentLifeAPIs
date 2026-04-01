@@ -76,36 +76,21 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // allow all origin to access this server
-//        config.addAllowedOriginPattern("*");
+
         config.setAllowedOrigins(List.of(
-                "http://localhost:3000",
-                "http://localhost:5173",
-                "https://studentlifeapis.onrender.com"
+                "http://localhost:3000/",
+                "http://localhost:5173/",
+                "https://student-life-platform.vercel.app/"
         ));
 
-        config.setAllowCredentials(true);
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
 
         config.setAllowCredentials(true);
 
-        String[] allowedMethods = {
-                "GET", "POST", "PUT", "DELETE", "OPTIONS"
-        };
-        for (String method : allowedMethods) {
-            config.addAllowedMethod(method);
-        }
-
-        // allow all header
-        config.addAllowedHeader("*");
-        config.addExposedHeader("*");
-
-//        config.setAllowedHeaders(List.of(
-//                "Authorization", "Content-Type"
-//        ));
+        config.setAllowedHeaders(List.of("*"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
-
         return source;
     }
 }
