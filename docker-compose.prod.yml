@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: studentLife_api_prod
+    container_name: studentLife_apis_prod
     restart: always
     # env_file:
     #   - .env.prod
