@@ -14,6 +14,7 @@ services:
           memory: 1g
 
   app:
+    image: monineath/studentlife-api:latest
     build:
       context: .
       dockerfile: Dockerfile
