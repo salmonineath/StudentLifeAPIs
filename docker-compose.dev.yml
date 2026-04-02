@@ -1,0 +1,15 @@
+services:
+  app:
+    build: .
+    container_name: studentLife_api_dev
+    restart: "no"
+    env_file:
+      - .env
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+    ports:
+      - "5000:5000"
+    mem_limit: 1g
+
+volumes:
+  db_data:
