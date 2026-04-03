@@ -1,9 +1,6 @@
 package com.studentlife.StudentLifeAPIs.Service.Impl;
 
-import com.studentlife.StudentLifeAPIs.DTO.Request.NotificationRequest;
-import com.studentlife.StudentLifeAPIs.DTO.Request.OneTimeScheduleRequest;
-import com.studentlife.StudentLifeAPIs.DTO.Request.RecurringScheduleRequest;
-import com.studentlife.StudentLifeAPIs.DTO.Request.ScheduleUpdateRequest;
+import com.studentlife.StudentLifeAPIs.DTO.Request.*;
 import com.studentlife.StudentLifeAPIs.DTO.Response.ApiResponse;
 import com.studentlife.StudentLifeAPIs.DTO.Response.ScheduleResponse;
 import com.studentlife.StudentLifeAPIs.Entity.Schedules;
@@ -17,11 +14,13 @@ import com.studentlife.StudentLifeAPIs.Service.ScheduleService;
 import com.studentlife.StudentLifeAPIs.Specification.ScheduleSpecification;
 import com.studentlife.StudentLifeAPIs.Utils.AuthUtil;
 import com.studentlife.StudentLifeAPIs.Utils.ScheduleUtil;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.studentlife.StudentLifeAPIs.Exception.ErrorsExceptionFactory.*;
@@ -180,5 +179,29 @@ public class ScheduleServiceImpl implements ScheduleService {
                 true,
                 "Schedule deleted successfully."
         );
+    }
+
+    @Override
+    @Transactional
+    public Long createAssignmentEvent(
+            String title,
+            String description,
+            LocalDateTime dueDate,
+            Long assignmentId,
+            Users user
+    ) {
+        Schedules event = Schedules.builder()
+                .title(title)
+                .description(description)
+                .type(ScheduleType.ONE_TIME)
+                .startTime(dueDate.minusHours(1))
+                .endTime(dueDate)
+                .isImportant(true)
+                .assignmentId(assignmentId)
+                .user(user)
+                .build();
+
+        scheduleRepository.save(event);
+        return event.getId();
     }
 }

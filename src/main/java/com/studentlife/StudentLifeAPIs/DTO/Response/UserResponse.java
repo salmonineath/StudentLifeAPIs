@@ -1,7 +1,6 @@
 package com.studentlife.StudentLifeAPIs.DTO.Response;
 
 
-import com.studentlife.StudentLifeAPIs.Entity.Roles;
 import lombok.Builder;
 import lombok.Data;
 
