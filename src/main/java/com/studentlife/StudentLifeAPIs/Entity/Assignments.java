@@ -12,7 +12,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "assignments")
@@ -38,10 +38,11 @@ public class Assignments {
 
     @NotNull
     @Column(name = "due_date", nullable = false)
-    private Date dueDate;
+    private LocalDateTime dueDate;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Builder.Default
     private AssignmentStatus status = AssignmentStatus.PENDING;
 
     @Column(nullable = false)

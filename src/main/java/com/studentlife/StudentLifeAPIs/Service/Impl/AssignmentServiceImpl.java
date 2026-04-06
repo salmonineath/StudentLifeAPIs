@@ -5,9 +5,11 @@ import com.studentlife.StudentLifeAPIs.DTO.Response.ApiResponse;
 import com.studentlife.StudentLifeAPIs.DTO.Response.AssignmentResponse;
 import com.studentlife.StudentLifeAPIs.Entity.Assignments;
 import com.studentlife.StudentLifeAPIs.Entity.Users;
+import com.studentlife.StudentLifeAPIs.Enum.AssignmentStatus;
 import com.studentlife.StudentLifeAPIs.Mapper.AssignmentMapper;
 import com.studentlife.StudentLifeAPIs.Repository.AssignmentRepository;
 import com.studentlife.StudentLifeAPIs.Service.AssignmentService;
+import com.studentlife.StudentLifeAPIs.Service.ScheduleService;
 import com.studentlife.StudentLifeAPIs.Utils.AuthUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,25 +26,33 @@ public class AssignmentServiceImpl implements AssignmentService {
     private final AssignmentRepository assignmentRepository;
     private final AuthUtil authUtil;
     private final AssignmentMapper assignmentMapper;
+    private final ScheduleService scheduleService;
 
     @Override
     public ApiResponse<AssignmentResponse> createAssignment(CreateAssignmentRequest request) {
         Users currentUser = authUtil.getAuthenticatedUser();
 
-        Assignments assignment = new Assignments();
-        assignment.setTitle(request.getTitle());
-        assignment.setDescription(request.getDescription());
-        assignment.setSubject(request.getSubject());
-        assignment.setDueDate(request.getDueDate());
+        Assignments assignment = assignmentMapper.toEntity(request);
         assignment.setUser(currentUser);
 
         assignmentRepository.save(assignment);
+
+        Long scheduleId = scheduleService.createAssignmentSchedule(
+                assignment.getTitle(),
+                assignment.getDescription(),
+                assignment.getDueDate(),
+                assignment.getId(),
+                currentUser
+        );
+
+        AssignmentResponse response = assignmentMapper.toResponse(assignment);
+        response.setScheduleId(scheduleId);
 
         return new ApiResponse<>(
                 201,
                 true,
                 "Assignment created successfully.",
-                assignmentMapper.toResponse(assignment)
+                response
         );
     }
 

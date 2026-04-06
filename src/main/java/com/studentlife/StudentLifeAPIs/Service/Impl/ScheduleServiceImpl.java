@@ -183,13 +183,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     @Transactional
-    public Long createAssignmentEvent(
-            String title,
-            String description,
-            LocalDateTime dueDate,
-            Long assignmentId,
-            Users user
-    ) {
+    public Long createAssignmentSchedule(String title, String description, LocalDateTime dueDate, Long assignmentId, Users user) {
         Schedules event = Schedules.builder()
                 .title(title)
                 .description(description)
@@ -202,6 +196,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                 .build();
 
         scheduleRepository.save(event);
+
         return event.getId();
     }
 }
