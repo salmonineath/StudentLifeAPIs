@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.studentlife.StudentLifeAPIs.Exception.ErrorsExceptionFactory.forbidden;
+import static com.studentlife.StudentLifeAPIs.Exception.ErrorsExceptionFactory.notFound;
+
 @Service
 @RequiredArgsConstructor
 public class AssignmentServiceImpl implements AssignmentService {
@@ -45,11 +48,40 @@ public class AssignmentServiceImpl implements AssignmentService {
 
     @Override
     public ApiResponse<List<AssignmentResponse>> getMyAssignments() {
-        return null;
+
+        Users currentUser = authUtil.getAuthenticatedUser();
+
+        List<AssignmentResponse> responses = assignmentRepository
+                .findByUserId(currentUser.getId())
+                .stream()
+                .map(assignmentMapper::toResponse)
+                .toList();
+
+        return new ApiResponse<>(
+                200,
+                true,
+                "Get all assignment successfully.",
+                responses
+        );
     }
 
     @Override
     public ApiResponse<AssignmentResponse> getAssignmentById(Long id) {
-        return null;
+
+        Users currentUser = authUtil.getAuthenticatedUser();
+
+        Assignments assignment = assignmentRepository.findById(id)
+                .orElseThrow(() -> notFound("Assignment not found."));
+
+        if (!assignment.getUser().getId().equals(currentUser.getId())) {
+            throw forbidden("You do not have access to this resource.");
+        }
+
+        return new ApiResponse<>(
+                200,
+                true,
+                "Get assignment successfully.",
+                assignmentMapper.toResponse(assignment)
+        );
     }
 }
