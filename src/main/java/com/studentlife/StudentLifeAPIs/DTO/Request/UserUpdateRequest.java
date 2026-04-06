@@ -8,8 +8,6 @@ import lombok.Data;
 public class UserUpdateRequest {
 
     private String fullname;
-
-    @Pattern(regexp = "^\\+?[0-9\\-\\s]{7,20}$", message = "Invalid phone number format")
     private String phone;
     private String university;
     private String major;
