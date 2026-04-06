@@ -1,6 +1,7 @@
 package com.studentlife.StudentLifeAPIs.Service;
 
 import com.studentlife.StudentLifeAPIs.DTO.Request.CreateAssignmentRequest;
+import com.studentlife.StudentLifeAPIs.DTO.Request.UpdateProgressRequest;
 import com.studentlife.StudentLifeAPIs.DTO.Response.ApiResponse;
 import com.studentlife.StudentLifeAPIs.DTO.Response.AssignmentResponse;
 
@@ -13,4 +14,8 @@ public interface AssignmentService {
     ApiResponse<List<AssignmentResponse>> getMyAssignments();
 
     ApiResponse<AssignmentResponse> getAssignmentById(Long id);
+
+    ApiResponse<AssignmentResponse> updateProgress(Long id, UpdateProgressRequest request);
+
+    ApiResponse<?> deleteAssignment(Long id);
 }

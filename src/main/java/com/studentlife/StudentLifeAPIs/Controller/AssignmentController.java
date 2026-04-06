@@ -1,6 +1,7 @@
 package com.studentlife.StudentLifeAPIs.Controller;
 
 import com.studentlife.StudentLifeAPIs.DTO.Request.CreateAssignmentRequest;
+import com.studentlife.StudentLifeAPIs.DTO.Request.UpdateProgressRequest;
 import com.studentlife.StudentLifeAPIs.DTO.Response.ApiResponse;
 import com.studentlife.StudentLifeAPIs.DTO.Response.AssignmentResponse;
 import com.studentlife.StudentLifeAPIs.Service.AssignmentService;
@@ -37,5 +38,20 @@ public class AssignmentController {
             @PathVariable Long id
     ) {
         return ResponseEntity.ok(assignmentService.getAssignmentById(id));
+    }
+
+    @PatchMapping("/{id}/progress")
+    public ResponseEntity<ApiResponse<AssignmentResponse>> updateProgress(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateProgressRequest request
+    ) {
+        return ResponseEntity.ok(assignmentService.updateProgress(id, request));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<?>> delete(
+            @PathVariable Long id
+    ) {
+        return ResponseEntity.ok(assignmentService.deleteAssignment(id));
     }
 }
