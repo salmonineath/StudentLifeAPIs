@@ -401,3 +401,5 @@ public class AssignmentServiceImpl implements AssignmentService {
         return new RedirectView(frontendUrl + "/invite/declined");
     }
 }
+
+// checked!!
