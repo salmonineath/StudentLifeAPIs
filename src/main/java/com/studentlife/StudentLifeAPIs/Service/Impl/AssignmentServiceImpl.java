@@ -1,6 +1,6 @@
 package com.studentlife.StudentLifeAPIs.Service.Impl;
 
-import com.studentlife.StudentLifeAPIs.DTO.Request.CreateAssignmentRequest;
+import com.studentlife.StudentLifeAPIs.DTO.Request.AssignmentRequest;
 import com.studentlife.StudentLifeAPIs.DTO.Request.InviteRequest;
 import com.studentlife.StudentLifeAPIs.DTO.Request.NotificationRequest;
 import com.studentlife.StudentLifeAPIs.DTO.Request.UpdateProgressRequest;
@@ -54,7 +54,7 @@ public class AssignmentServiceImpl implements AssignmentService {
     private String frontendUrl;
 
     @Override
-    public ApiResponse<AssignmentResponse> createAssignment(CreateAssignmentRequest request) {
+    public ApiResponse<AssignmentResponse> createAssignment(AssignmentRequest request) {
         Users currentUser = authUtil.getAuthenticatedUser();
 
         Assignments assignment = assignmentMapper.toEntity(request);
@@ -117,6 +117,32 @@ public class AssignmentServiceImpl implements AssignmentService {
                 true,
                 "Get assignment successfully.",
                 assignmentMapper.toResponse(assignment)
+        );
+    }
+
+    @Override
+    public ApiResponse<AssignmentResponse> updateAssignment(Long id, AssignmentRequest request) {
+        Users currentUser = authUtil.getAuthenticatedUser();
+
+        Assignments assignment = assignmentRepository.findById(id)
+                .orElseThrow(() -> notFound("Assignment not found."));
+
+        if (!assignment.getUser().getId().equals(currentUser.getId())) {
+            throw forbidden("You do not have access to this resource.");
+        }
+
+        assignment.setTitle(request.getTitle());
+        assignment.setDescription(request.getDescription());
+        assignment.setSubject(request.getSubject());
+        assignment.setDueDate(request.getDueDate());
+
+        Assignments updated = assignmentRepository.save(assignment);
+
+        return new ApiResponse<>(
+                200,
+                true,
+                "Assignment update successfully.",
+                assignmentMapper.toResponse(updated)
         );
     }
 

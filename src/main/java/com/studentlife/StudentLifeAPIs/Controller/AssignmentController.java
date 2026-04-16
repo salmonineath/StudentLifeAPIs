@@ -1,6 +1,6 @@
 package com.studentlife.StudentLifeAPIs.Controller;
 
-import com.studentlife.StudentLifeAPIs.DTO.Request.CreateAssignmentRequest;
+import com.studentlife.StudentLifeAPIs.DTO.Request.AssignmentRequest;
 import com.studentlife.StudentLifeAPIs.DTO.Request.InviteRequest;
 import com.studentlife.StudentLifeAPIs.DTO.Request.UpdateProgressRequest;
 import com.studentlife.StudentLifeAPIs.DTO.Response.ApiResponse;
@@ -23,7 +23,7 @@ public class AssignmentController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<AssignmentResponse>> create(
-            @Valid @RequestBody CreateAssignmentRequest request
+            @Valid @RequestBody AssignmentRequest request
             ) {
         return ResponseEntity
                 .status(201)
@@ -40,6 +40,14 @@ public class AssignmentController {
             @PathVariable Long id
     ) {
         return ResponseEntity.ok(assignmentService.getAssignmentById(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<AssignmentResponse>> updateAssignment(
+            @PathVariable Long id,
+            @Valid @RequestBody AssignmentRequest request
+    ) {
+        return ResponseEntity.ok(assignmentService.updateAssignment(id, request));
     }
 
     @PatchMapping("/{id}/progress")
