@@ -1,6 +1,6 @@
 package com.studentlife.StudentLifeAPIs.Mapper;
 
-import com.studentlife.StudentLifeAPIs.DTO.Request.CreateAssignmentRequest;
+import com.studentlife.StudentLifeAPIs.DTO.Request.AssignmentRequest;
 import com.studentlife.StudentLifeAPIs.DTO.Response.AssignmentResponse;
 import com.studentlife.StudentLifeAPIs.Entity.Assignments;
 import org.mapstruct.Mapper;
@@ -17,7 +17,7 @@ public interface AssignmentMapper {
     @Mapping(target = "progress",  ignore = true)   // defaults to 0 in entity
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    Assignments toEntity(CreateAssignmentRequest request);
+    Assignments toEntity(AssignmentRequest request);
 
     // ── Entity → Response ─────────────────────────────────────────────────────
 

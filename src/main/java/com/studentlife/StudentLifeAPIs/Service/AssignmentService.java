@@ -1,6 +1,6 @@
 package com.studentlife.StudentLifeAPIs.Service;
 
-import com.studentlife.StudentLifeAPIs.DTO.Request.CreateAssignmentRequest;
+import com.studentlife.StudentLifeAPIs.DTO.Request.AssignmentRequest;
 import com.studentlife.StudentLifeAPIs.DTO.Request.InviteRequest;
 import com.studentlife.StudentLifeAPIs.DTO.Request.UpdateProgressRequest;
 import com.studentlife.StudentLifeAPIs.DTO.Response.ApiResponse;
@@ -12,11 +12,13 @@ import java.util.List;
 
 public interface AssignmentService {
 
-    ApiResponse<AssignmentResponse> createAssignment(CreateAssignmentRequest request);
+    ApiResponse<AssignmentResponse> createAssignment(AssignmentRequest request);
 
     ApiResponse<List<AssignmentResponse>> getMyAssignments();
 
     ApiResponse<AssignmentResponse> getAssignmentById(Long id);
+
+    ApiResponse<AssignmentResponse> updateAssignment(Long id, AssignmentRequest request);
 
     ApiResponse<AssignmentResponse> updateProgress(Long id, UpdateProgressRequest request);
 
