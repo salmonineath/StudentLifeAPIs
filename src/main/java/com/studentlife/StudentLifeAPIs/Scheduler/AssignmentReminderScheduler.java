@@ -10,6 +10,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -36,10 +37,23 @@ public class AssignmentReminderScheduler {
     private final ReminderLogRepository   reminderLogRepository;
     private final JavaMailSender          mailSender;
 
+    @Value("${app.backend.url}")
+    private String backendUrl;
+
     private static final DateTimeFormatter DISPLAY_FMT =
             DateTimeFormatter.ofPattern("MMM d, yyyy 'at' h:mm a");
 
     // ── Main job — runs every 30 minutes ──────────────────────────────────────
+
+    @Scheduled(fixedDelay = 4 * 60 * 1000) // every 4 minutes
+    public void keepAlive() {
+        try {
+            new java.net.URI(backendUrl + "/health").toURL().openConnection().connect();
+            log.info("[KeepAlive] Server pinged successfully");
+        } catch (Exception e) {
+            log.warn("[KeepAlive] Ping failed: {}", e.getMessage());
+        }
+    }
 
     @Scheduled(fixedDelay = 30 * 60 * 1000) // every 30 minutes
     @Transactional

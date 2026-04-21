@@ -37,11 +37,11 @@ public class AssignmentController {
         return ResponseEntity.ok(assignmentService.getMyAssignments());
     }
 
-    @PostMapping("/test-reminder")
-    public ResponseEntity<?> testReminder() {
-        assignmentReminderScheduler.sendReminders();
-        return ResponseEntity.ok("Reminders sent — check your email");
-    }
+//    @PostMapping("/test-reminder")
+//    public ResponseEntity<?> testReminder() {
+//        assignmentReminderScheduler.sendReminders();
+//        return ResponseEntity.ok("Reminders sent — check your email");
+//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<AssignmentResponse>> getById(
