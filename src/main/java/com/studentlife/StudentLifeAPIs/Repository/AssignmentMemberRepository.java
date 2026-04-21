@@ -15,6 +15,9 @@ public interface AssignmentMemberRepository extends JpaRepository<AssignmentMemb
 
     List<AssignmentMember> findByAssignmentIdAndStatus(Long assignmentId, AssignmentMemberStatus status);
 
+    // find all groups a user has accepted
+    List<AssignmentMember> findByUserIdAndStatus(Long userId, AssignmentMemberStatus status);
+
     boolean existsByAssignmentIdAndUserId(Long assignmentId, Long userId);
 
     Optional<AssignmentMember> findByInviteToken(String inviteToken);
