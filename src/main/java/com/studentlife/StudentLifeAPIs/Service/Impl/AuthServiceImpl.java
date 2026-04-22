@@ -198,7 +198,7 @@ public class AuthServiceImpl implements AuthService {
                 201,
                 true,
                 "Register successful.",
-                new RegisterResponse(userResponse)
+                new AuthResponse(accessToken, userResponse)
         );
     }
 
