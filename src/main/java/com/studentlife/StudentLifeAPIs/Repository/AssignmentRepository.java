@@ -1,6 +1,7 @@
 package com.studentlife.StudentLifeAPIs.Repository;
 
 import com.studentlife.StudentLifeAPIs.Entity.Assignments;
+import com.studentlife.StudentLifeAPIs.Enum.AssignmentMemberStatus;
 import com.studentlife.StudentLifeAPIs.Enum.AssignmentStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,17 +14,19 @@ import java.util.List;
 @Repository
 public interface AssignmentRepository extends JpaRepository<Assignments, Long> {
 
-    @Query("""
-    SELECT a FROM Assignments a
-    WHERE a.user.id = :userId
+    @Query(value = """
+    SELECT a.* FROM assignments a
+    WHERE a.user_id = :userId
     OR EXISTS (
-        SELECT m FROM AssignmentMember m
-        WHERE m.assignment = a
-        AND m.user.id = :userId
-        AND m.status = com.studentlife.StudentLifeAPIs.Enum.AssignmentMemberStatus.ACCEPTED
+        SELECT 1 FROM assignment_members m
+        WHERE m.assignment_id = a.id
+        AND m.user_id = :userId
+        AND m.status = 'ACCEPTED'
     )
-""")
-    List<Assignments> findAllAccessibleByUserId(@Param("userId") Long userId);
+""", nativeQuery = true)
+    List<Assignments> findAllAccessibleByUserId(
+            @Param("userId") Long userId
+    );
 
 //    List<Assignments> findByUserId(Long userId);
 
