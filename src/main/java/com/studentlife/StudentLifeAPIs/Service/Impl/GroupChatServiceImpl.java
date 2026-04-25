@@ -13,7 +13,9 @@ import com.studentlife.StudentLifeAPIs.Mapper.GroupMessageMapper;
 import com.studentlife.StudentLifeAPIs.Repository.AssignmentMemberRepository;
 import com.studentlife.StudentLifeAPIs.Repository.AssignmentRepository;
 import com.studentlife.StudentLifeAPIs.Repository.GroupMessageRepository;
+import com.studentlife.StudentLifeAPIs.Repository.UserRepository;
 import com.studentlife.StudentLifeAPIs.Service.GroupChatService;
+import com.studentlife.StudentLifeAPIs.Service.OneSignalService;
 import com.studentlife.StudentLifeAPIs.Utils.AuthUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +41,8 @@ public class GroupChatServiceImpl implements GroupChatService {
     private final AuthUtil authUtil;
     private final SimpMessagingTemplate messagingTemplate;
     private final GroupMessageMapper groupMessageMapper;
+    private final OneSignalService oneSignalService;
+    private final UserRepository userRepository;
 
     @Override
     public ApiResponse<List<GroupResponse>> getMyGroups() {
@@ -156,6 +160,28 @@ public class GroupChatServiceImpl implements GroupChatService {
                 "/topic/group/" + request.getAssignmentId(),
                 response
         );
+
+        List<AssignmentMember> members = assignmentMemberRepository
+                .findByAssignmentIdAndStatus(request.getAssignmentId(), AssignmentMemberStatus.ACCEPTED);
+
+        Users owner = assignment.getUser();
+        if (!owner.getId().equals(senderId)) {
+            oneSignalService.sendPushToUser(
+                    owner.getOneSignalPlayerId(),
+                    sender.getFullname(),
+                    request.getContent()
+            );
+        }
+
+        for (AssignmentMember member : members) {
+            if (!member.getUser().getId().equals(senderId)) {
+                oneSignalService.sendPushToUser(
+                        member.getUser().getOneSignalPlayerId(),
+                        sender.getFullname(),
+                        request.getContent()
+                );
+            }
+        }
 
         log.info("[Chat] Message sent in group {} by user {}", request.getAssignmentId(), senderId);
 
