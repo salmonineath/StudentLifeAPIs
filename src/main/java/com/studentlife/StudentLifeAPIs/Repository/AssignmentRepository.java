@@ -1,6 +1,7 @@
 package com.studentlife.StudentLifeAPIs.Repository;
 
 import com.studentlife.StudentLifeAPIs.Entity.Assignments;
+import com.studentlife.StudentLifeAPIs.Entity.Users;
 import com.studentlife.StudentLifeAPIs.Enum.AssignmentMemberStatus;
 import com.studentlife.StudentLifeAPIs.Enum.AssignmentStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,6 +28,8 @@ public interface AssignmentRepository extends JpaRepository<Assignments, Long> {
     List<Assignments> findAllAccessibleByUserId(
             @Param("userId") Long userId
     );
+
+    boolean existsByUser(Users user);
 
 //    List<Assignments> findByUserId(Long userId);
 
