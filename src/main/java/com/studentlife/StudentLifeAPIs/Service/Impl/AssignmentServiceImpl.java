@@ -137,7 +137,12 @@ public class AssignmentServiceImpl implements AssignmentService {
         Assignments assignment = assignmentRepository.findById(id)
                 .orElseThrow(() -> notFound("Assignment not found."));
 
-        if (!assignment.getUser().getId().equals(currentUser.getId())) {
+        boolean isOwner = assignment.getUser().getId().equals(currentUser.getId());
+        boolean isMember = assignmentMemberRepository.existsByAssignmentIdAndUserIdAndStatus(
+                id, currentUser.getId(), AssignmentMemberStatus.ACCEPTED
+        );
+
+        if (!isOwner && isMember) {
             throw forbidden("You do not have access to this resource.");
         }
 

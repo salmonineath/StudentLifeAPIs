@@ -38,6 +38,16 @@ public class UserDeviceServiceImpl implements UserDeviceService {
             throw badRequest("DeviceId is required");
         }
 
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class UserDeviceServiceImpl implements UserDeviceService {
+
+    private final UserDeviceRepository userDeviceRepository;
+
+    @Override
+    public ApiResponse<UserDeviceResponse> registerDevice(Users users, RegisterDeviceRequest request, String ipAddress) {
+
         Optional<UserDevices> existDevice =
                 userDeviceRepository.findByUserIdAndDeviceId(
                         users.getId(), request.getDeviceId()
