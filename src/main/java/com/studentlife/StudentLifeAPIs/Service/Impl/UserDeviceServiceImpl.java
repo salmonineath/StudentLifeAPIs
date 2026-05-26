@@ -40,13 +40,21 @@ public class UserDeviceServiceImpl implements UserDeviceService {
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class UserDeviceServiceImpl implements UserDeviceService {
 
     private final UserDeviceRepository userDeviceRepository;
+    private final DeviceMapper deviceMapper;
 
     @Override
+    @Transactional
     public ApiResponse<UserDeviceResponse> registerDevice(Users users, RegisterDeviceRequest request, String ipAddress) {
+
+        if (users == null) {
+            throw unauthorized("User is required");
+        }
+        if (request == null || request.getDeviceId() == null|| request.getDeviceId().isBlank()) {
+            throw badRequest("DeviceId is required");
+        }
 
         Optional<UserDevices> existDevice =
                 userDeviceRepository.findByUserIdAndDeviceId(
