@@ -12,11 +12,13 @@ import com.studentlife.StudentLifeAPIs.Repository.RefreshTokenRepository;
 import com.studentlife.StudentLifeAPIs.Repository.RoleRepository;
 import com.studentlife.StudentLifeAPIs.Repository.UserRepository;
 import com.studentlife.StudentLifeAPIs.Service.AuthService;
+import com.studentlife.StudentLifeAPIs.Service.DeviceTrackingService;
 import com.studentlife.StudentLifeAPIs.Utils.CookieUtil;
 import com.studentlife.StudentLifeAPIs.Utils.UserValidatorUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -33,6 +35,7 @@ import java.util.UUID;
 
 import static com.studentlife.StudentLifeAPIs.Exception.ErrorsExceptionFactory.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -46,6 +49,7 @@ public class AuthServiceImpl implements AuthService {
     private final CookieUtil cookieUtil;
     private final UserValidatorUtil userValidatorUtil;
     private final AuthenticationManager authenticationManager;
+    private final DeviceTrackingService deviceTrackingService;
 
     @Override
     public ApiResponse<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
@@ -239,6 +243,17 @@ public class AuthServiceImpl implements AuthService {
         // MAP USER TO RESPONSE USING MAPSTRUCT
         // ========================
         UserResponse userResponse = userMapper.toUserResponse(user);
+
+        // ========================
+        // ASSIGN ROLES TO USER
+        // ========================
+        try {
+            deviceTrackingService.getUserDevice(user, httpRequest);
+        } catch (Exception e) {
+            // RED FLAG: device tracking failure must NOT break login.
+            // Log and continue — auth is the primary concern.
+            log.warn("Failed to track device for user {}: {}", user.getId(), e.getMessage());
+        }
 
         // ========================
         // GENERATE ACCESS TOKEN

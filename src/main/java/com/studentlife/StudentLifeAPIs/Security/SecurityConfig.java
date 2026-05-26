@@ -48,11 +48,16 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                                 .requestMatchers(
-                                        "/api/v1/ws/**",          // ✅ Allow WebSocket handshake
-                                        "/api/v1/ws/websocket/**" // ✅ Allow SockJS fallback
+                                        "/api/v1/ws/**",
+                                        "/api/v1/ws/websocket/**"
                                 ).permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/health").permitAll()
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**"
+                        ).permitAll()
                                 .requestMatchers("/invite/accept", "/invite/decline").permitAll()
                                 .requestMatchers("/api/v1/me").authenticated()
                                 .requestMatchers("/api/v1/schedule/**").hasRole("student")
