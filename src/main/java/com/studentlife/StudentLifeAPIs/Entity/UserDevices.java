@@ -1,6 +1,7 @@
 package com.studentlife.StudentLifeAPIs.Entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.Instant;
@@ -16,6 +17,7 @@ import java.time.Instant;
                 @Index(name = "idx_user_device_user", columnList = "user_id")
         }
 )
+@Builder
 public class UserDevices {
 
     @Id
@@ -43,5 +45,6 @@ public class UserDevices {
     private Instant firstSeenAt;
     private Instant lastSeenAt;
 
+    @Builder.Default
     private boolean active = true;
 }

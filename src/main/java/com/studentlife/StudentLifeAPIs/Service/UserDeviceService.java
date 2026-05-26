@@ -15,5 +15,7 @@ public interface UserDeviceService {
             String ipAddress
     );
 
+    ApiResponse<?> removeDevice(Users users, Long deviceId);
+
     List<UserDeviceResponse> getMyDevices(Users users);
 }

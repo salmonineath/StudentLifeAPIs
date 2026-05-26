@@ -33,8 +33,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
-        // Extract token from header
+        // Extract token from cookie; fall back to Authorization header for Swagger/API clients
         String token = cookieUtil.getCookieValue(request, "accessToken");
+
+        if (token == null) {
+            String authHeader = request.getHeader("Authorization");
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                token = authHeader.substring(7);
+            }
+        }
 
         if (token == null) {
             filterChain.doFilter(request, response);
