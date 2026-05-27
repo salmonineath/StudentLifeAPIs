@@ -16,10 +16,6 @@ import java.time.temporal.ChronoUnit;
 public class ChatCleanupScheduler {
 
     private final GroupMessageRepository groupMessageRepository;
-    /**
-     * Runs every day at midnight.
-     * Deletes all group messages older than 5 days.
-     */
     @Scheduled(cron = "0 0 0 * * *")
     @Transactional
     public void deleteOldMessages() {

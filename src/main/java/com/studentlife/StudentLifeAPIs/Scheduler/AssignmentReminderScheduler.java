@@ -20,17 +20,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-/**
- * Runs every 30 minutes and checks for assignments due in ~72h, ~24h, or ~2h.
- * Sends one reminder email per window per assignment (idempotent via ReminderLog).
- *
- * Each window has a ±15 minute buffer to account for scheduler drift.
- * Example: "72H" window = assignments due between 71h45m and 72h15m from now.
- */
 @Slf4j
 @Component
 @RequiredArgsConstructor
-@SuppressWarnings("null")
 public class AssignmentReminderScheduler {
 
     private final AssignmentRepository    assignmentRepository;
@@ -43,9 +35,7 @@ public class AssignmentReminderScheduler {
     private static final DateTimeFormatter DISPLAY_FMT =
             DateTimeFormatter.ofPattern("MMM d, yyyy 'at' h:mm a");
 
-    // ── Main job — runs every 30 minutes ──────────────────────────────────────
-
-    @Scheduled(fixedDelay = 4 * 60 * 1000) // every 4 minutes
+    @Scheduled(fixedDelay = 4 * 60 * 1000)
     public void keepAlive() {
         try {
             new java.net.URI(backendUrl + "/health").toURL().openConnection().connect();
@@ -55,7 +45,7 @@ public class AssignmentReminderScheduler {
         }
     }
 
-    @Scheduled(fixedDelay = 30 * 60 * 1000) // every 30 minutes
+    @Scheduled(fixedDelay = 30 * 60 * 1000)
     @Transactional
     public void sendReminders() {
         LocalDateTime now = LocalDateTime.now();
@@ -66,14 +56,11 @@ public class AssignmentReminderScheduler {
         checkWindow(now,  2, "2H",  "2 hours");
     }
 
-    // ── Per-window check ──────────────────────────────────────────────────────
-
     private void checkWindow(LocalDateTime now, int hours, String type, String label) {
-        // ±15 minute buffer around the target hour
 //        LocalDateTime from = now.plusHours(hours).minusMinutes(15);
 //        LocalDateTime to   = now.plusHours(hours).plusMinutes(15);
-        LocalDateTime from = now.plusMinutes(1);   // anything due after now
-        LocalDateTime to   = now.plusHours(999);   // up to 999 hours away
+        LocalDateTime from = now.plusHours(hours).minusMinutes(15);
+        LocalDateTime to   = now.plusHours(hours).plusMinutes(15);
 
         List<Assignments> due = assignmentRepository.findDueWithin(from, to, AssignmentStatus.COMPLETED);
 

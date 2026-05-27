@@ -2,9 +2,6 @@ package com.studentlife.StudentLifeAPIs.Exception;
 
 import org.springframework.http.HttpStatus;
 
-import java.io.IOException;
-
-// ======= ERROR FACTORY ======= //
 public final class ErrorsExceptionFactory {
 
     private ErrorsExceptionFactory() { }
@@ -32,7 +29,7 @@ public final class ErrorsExceptionFactory {
         return new ApiException(422, message != null ? message : "Validation failed.");
     }
 
-    public static ApiException internal(String message, IOException e) {
+    public static ApiException internal(String message) {
         return new ApiException(500, message != null ? message : "Internal server error.");
     }
 }

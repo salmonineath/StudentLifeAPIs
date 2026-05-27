@@ -25,7 +25,6 @@ import static com.studentlife.StudentLifeAPIs.Exception.ErrorsExceptionFactory.n
 
 @Service
 @RequiredArgsConstructor
-@SuppressWarnings("null")
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -37,6 +36,7 @@ public class UserServiceImpl implements UserService {
     // ─── Read ────────────────────────────────────────────────────────────────
 
     @Override
+    @Transactional(readOnly = true)
     public PaginatedResponse<UserResponse> getAllUsers(int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size);
@@ -89,13 +89,13 @@ public class UserServiceImpl implements UserService {
         if (request.getPhone() != null)         user.setPhone(request.getPhone());
         if (request.getUniversity() != null)    user.setUniversity(request.getUniversity());
         if (request.getMajor() != null)         user.setMajor(request.getMajor());
-        if (request.getAcademic_year() != null) return null;user.setAcademicYear(request.getAcademic_year());
+        if (request.getAcademic_year() != null) user.setAcademicYear(request.getAcademic_year());
 
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
     @Override
-    public ApiResponse<UserResponse> GetProfileInfo() {
+    public ApiResponse<UserResponse> getProfileInfo() {
 
         Users authUser = authUtil.getAuthenticatedUser();
 

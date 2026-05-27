@@ -1,6 +1,7 @@
 package com.studentlife.StudentLifeAPIs.Service.Impl;
 
 import com.studentlife.StudentLifeAPIs.Service.OneSignalService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -12,7 +13,7 @@ import java.util.Map;
 
 @Slf4j
 @Service
-@SuppressWarnings("null")
+@RequiredArgsConstructor
 public class OneSignalServiceImpl implements OneSignalService {
 
     @Value("${onesignal.app-id}")
@@ -21,7 +22,7 @@ public class OneSignalServiceImpl implements OneSignalService {
     @Value("${onesignal.api-key}")
     private String apiKey;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
 
     @Override
     public void sendPushToUser(String playerId, String title, String message) {

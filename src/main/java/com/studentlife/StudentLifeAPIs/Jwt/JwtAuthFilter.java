@@ -53,13 +53,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            // 🔹 LOAD USER DYNAMICALLY HERE
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            // validate token
             if (jwtService.isTokenValid(token, userDetails)) {
 
-                // create authentication object
                 UsernamePasswordAuthenticationToken authenticationToken =
                         new UsernamePasswordAuthenticationToken(
                                 userDetails,
@@ -67,12 +64,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                 userDetails.getAuthorities()
                         );
 
-                // set authentication in security context
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                log.debug("JWT authenticated user: {}", username);
             }
         }
 
-        log.info("Jwt token extracted successfully.");
         filterChain.doFilter(request, response);
     }
 }

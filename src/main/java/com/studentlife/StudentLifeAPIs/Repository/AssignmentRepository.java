@@ -32,14 +32,6 @@ public interface AssignmentRepository extends JpaRepository<Assignments, Long> {
 
     List<Assignments> findByUser(Users user);
 
-//    List<Assignments> findByUserId(Long userId);
-
-    /**
-     * Find all active assignments whose due date falls within a time window.
-     * Used by the reminder scheduler to find assignments due in ~72h, ~24h, ~2h.
-     *
-     * Excludes COMPLETED assignments — no point reminding for finished work.
-     */
     @Query("SELECT a FROM Assignments a WHERE a.dueDate BETWEEN :from AND :to AND a.status != :excludeStatus")
     List<Assignments> findDueWithin(
             @Param("from") LocalDateTime from,
