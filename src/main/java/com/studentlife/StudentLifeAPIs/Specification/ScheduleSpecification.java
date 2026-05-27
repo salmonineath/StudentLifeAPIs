@@ -26,26 +26,21 @@ public class ScheduleSpecification {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            // Always filter by the authenticated user
             predicates.add(cb.equal(root.get("user").get("id"), userId));
 
-            // Apply date range only if both dates are provided
             if (startDate != null && endDate != null) {
                 LocalDateTime from = startDate.atStartOfDay();
                 LocalDateTime to   = endDate.atTime(23, 59, 59);
 
-                // ONE_TIME: show if the event overlaps with the requested date range
                 Predicate isOneTime = cb.equal(root.get("type"), ScheduleType.ONE_TIME);
                 Predicate overlaps = cb.and(
-                        cb.lessThanOrEqualTo(root.get("startTime"), to),    // starts before range ends
-                        cb.greaterThanOrEqualTo(root.get("endTime"), from)  // ends after range starts
+                        cb.lessThanOrEqualTo(root.get("startTime"), to),
+                        cb.greaterThanOrEqualTo(root.get("endTime"), from)
                 );
                 Predicate oneTimeInRange = cb.and(isOneTime, overlaps);
 
-                // RECURRING: always show regardless of date range
                 Predicate isRecurring = cb.equal(root.get("type"), ScheduleType.RECURRING);
 
-                // Either recurring OR one-time-in-range
                 predicates.add(cb.or(isRecurring, oneTimeInRange));
             }
 

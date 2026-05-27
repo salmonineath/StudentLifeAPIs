@@ -15,18 +15,6 @@ public class UserValidatorUtil {
 
     private final UserRepository userRepository;
 
-    // =================
-    // EMAIL FORMAT VALIDATOR
-    // =================
-//    public void validateEmailFormat(String email) {
-//        if (email == null || !email.contains("@") || !email.endsWith(".com")) {
-//            throw badRequest("Email must contain '@' and end with '.com'");
-//        }
-//    }
-
-    // =================
-    // CREATE VALIDATION
-    // =================
     public void validateCreate(UserCreateRequest request) {
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -38,9 +26,6 @@ public class UserValidatorUtil {
         }
     }
 
-    // =================
-    // UPDATE VALIDATION (PROFILE ONLY)
-    // =================
     public void validateUpdate(UserUpdateRequest request) {
 
         if (request.getFullname() == null || request.getFullname().isBlank()) {
@@ -54,12 +39,10 @@ public class UserValidatorUtil {
     }
 
     public void validateRegister(RegisterRequest request) {
-        // Validate username
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw badRequest("Username already exists");
         }
 
-        // Validate email
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw badRequest("Email already exists");
         }

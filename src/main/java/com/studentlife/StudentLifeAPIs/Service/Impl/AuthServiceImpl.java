@@ -14,7 +14,6 @@ import com.studentlife.StudentLifeAPIs.Repository.UserRepository;
 import com.studentlife.StudentLifeAPIs.Service.AuthService;
 import com.studentlife.StudentLifeAPIs.Service.DeviceTrackingService;
 import com.studentlife.StudentLifeAPIs.Utils.CookieUtil;
-import com.studentlife.StudentLifeAPIs.Utils.UserValidatorUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +46,6 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final UserMapper userMapper;
     private final CookieUtil cookieUtil;
-    private final UserValidatorUtil userValidatorUtil;
     private final AuthenticationManager authenticationManager;
     private final DeviceTrackingService deviceTrackingService;
 
@@ -140,9 +138,6 @@ public class AuthServiceImpl implements AuthService {
                 || userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw validation("This email or username already been used.");
         }
-
-        // username email validation
-        userValidatorUtil.validateRegister(request);
 
         Users user = userMapper.toUserEntityRegisterUser(request);
 

@@ -16,6 +16,9 @@ public interface GroupMessageRepository extends JpaRepository<GroupMessage, Long
     // Get all messages for a group, oldest first
     List<GroupMessage> findByAssignmentIdOrderByCreatedAtAsc(Long assignmentId);
 
+    // Get only the last message for a group (for preview)
+    java.util.Optional<GroupMessage> findTopByAssignmentIdOrderByCreatedAtDesc(Long assignmentId);
+
     // Delete all messages for a group (manual clear by student)
     void deleteByAssignmentId(Long assignmentId);
 

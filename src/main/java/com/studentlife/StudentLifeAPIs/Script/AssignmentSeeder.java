@@ -21,7 +21,6 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 @Order(5)
-@SuppressWarnings("null")
 public class AssignmentSeeder implements CommandLineRunner {
 
     private final AssignmentRepository assignmentRepository;

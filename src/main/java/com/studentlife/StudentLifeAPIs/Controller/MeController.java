@@ -16,7 +16,7 @@ public class MeController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<?>> getProfileInfo() {
-        return ResponseEntity.status(200).body(userService.GetProfileInfo());
+        return ResponseEntity.status(200).body(userService.getProfileInfo());
     }
 
     @PatchMapping("/update-profile")

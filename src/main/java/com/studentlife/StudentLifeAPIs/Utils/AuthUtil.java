@@ -4,7 +4,10 @@ import com.studentlife.StudentLifeAPIs.Entity.Users;
 import com.studentlife.StudentLifeAPIs.Jwt.JwtService;
 import com.studentlife.StudentLifeAPIs.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
+
+import java.security.Principal;
 
 import static com.studentlife.StudentLifeAPIs.Exception.ErrorsExceptionFactory.unauthorized;
 
@@ -25,15 +28,17 @@ public class AuthUtil {
         return currentUser;
     }
 
-    public Long getUserIdFromPrincipal(java.security.Principal principal) {
+    public Long getUserIdFromPrincipal(Principal principal) {
         if (principal == null) {
-            throw new RuntimeException("Not authenticated.");
+            throw unauthorized("Not authenticated.");
         }
-        // Principal name is the username set during JWT auth
-        // We look up the user by username to get their ID
-        Users user = userRepository.findByUsername(principal.getName())
-                .orElseThrow(() -> new RuntimeException("User not found."));
-        return user.getId();
+        if (principal instanceof UsernamePasswordAuthenticationToken auth &&
+                auth.getPrincipal() instanceof Users user) {
+            return user.getId();
+        }
+        return userRepository.findByUsername(principal.getName())
+                .orElseThrow(() -> unauthorized("User not found."))
+                .getId();
     }
 
 }
