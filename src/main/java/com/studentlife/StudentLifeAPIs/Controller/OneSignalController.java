@@ -22,7 +22,7 @@ public class OneSignalController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerPlayerId(@RequestBody Map<String, String> body) {
-        String playerId = body.get("playerIed");
+        String playerId = body.get("playerId");
         if (playerId == null || playerId.isBlank()) {
             return ResponseEntity.badRequest().build();
         }

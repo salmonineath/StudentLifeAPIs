@@ -11,16 +11,16 @@ public interface AssignmentMapper {
 
     // ── Request → Entity ──────────────────────────────────────────────────────
 
-    @Mapping(target = "id",        ignore = true)
-    @Mapping(target = "user",      ignore = true)
-    @Mapping(target = "status",    ignore = true)   // defaults to PENDING in entity
-    @Mapping(target = "progress",  ignore = true)   // defaults to 0 in entity
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "id",         ignore = true)
+    @Mapping(target = "user",       ignore = true)
+    @Mapping(target = "status",     ignore = true)
+    @Mapping(target = "progress",   ignore = true)
+    @Mapping(target = "scheduleId", ignore = true)
+    @Mapping(target = "createdAt",  ignore = true)
+    @Mapping(target = "updatedAt",  ignore = true)
     Assignments toEntity(AssignmentRequest request);
 
     // ── Entity → Response ─────────────────────────────────────────────────────
 
-    @Mapping(target = "scheduleId", ignore = true)
     AssignmentResponse toResponse(Assignments assignment);
 }

@@ -12,7 +12,7 @@ import com.studentlife.StudentLifeAPIs.Utils.AuthUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +30,6 @@ import static java.time.temporal.ChronoUnit.DAYS;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@SuppressWarnings("null")
 public class StudyPlanServiceImpl implements StudyPlanService {
 
     private final AssignmentRepository assignmentRepository;
@@ -41,9 +40,7 @@ public class StudyPlanServiceImpl implements StudyPlanService {
     @Value("${groq.api.key}")
     private String groqApiKey;
 
-//    :TODO put it in env after testing after it work
-    private static final String GROQ_URL =
-        "https://api.groq.com/openai/v1/chat/completions";
+    private static final String GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
 
     private static final DateTimeFormatter DISPLAY_FMT =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");

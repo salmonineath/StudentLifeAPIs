@@ -19,7 +19,6 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@SuppressWarnings("null")
 public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
@@ -41,7 +40,6 @@ public class NotificationServiceImpl implements NotificationService {
         Notification saved = notificationRepository.save(notification);
         NotificationResponse response = notificationMapper.toResponse(saved);
 
-//        Push real-time via WebSocket
         sendRealTimeNotification(recipient.getId(), response);
 
         oneSignalService.sendPushToUser(
@@ -79,7 +77,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public long conutUnread(Long userId) {
+    public long countUnread(Long userId) {
         return notificationRepository.countByRecipientIdAndIsReadFalse(userId);
     }
 

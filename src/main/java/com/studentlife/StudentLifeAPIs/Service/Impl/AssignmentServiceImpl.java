@@ -21,7 +21,7 @@ import com.studentlife.StudentLifeAPIs.Service.EmailService;
 import com.studentlife.StudentLifeAPIs.Service.NotificationService;
 import com.studentlife.StudentLifeAPIs.Service.ScheduleService;
 import com.studentlife.StudentLifeAPIs.Utils.AuthUtil;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -36,7 +36,6 @@ import static com.studentlife.StudentLifeAPIs.Exception.ErrorsExceptionFactory.*
 
 @Service
 @RequiredArgsConstructor
-@SuppressWarnings("null")
 public class AssignmentServiceImpl implements AssignmentService {
 
     private final GroupChatMemberRepository groupChatMemberRepository;
