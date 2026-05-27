@@ -24,7 +24,6 @@ public class GroupChatController {
     private final GroupChatService groupChatService;
     private final AuthUtil authUtil;
 
-
     @MessageMapping("/chat.send")
     public void sendMessage(@Payload ChatMessageRequest request, Principal principal) {
         Long senderId = authUtil.getUserIdFromPrincipal(principal);
@@ -49,7 +48,6 @@ public class GroupChatController {
         return ResponseEntity.ok(groupChatService.getMyGroups());
     }
 
-
     @GetMapping("/api/v1/chat/{assignmentId}/history")
     @ResponseBody
     public ResponseEntity<ApiResponse<List<GroupMessageResponse>>> getHistory(
@@ -58,7 +56,7 @@ public class GroupChatController {
         return ResponseEntity.ok(groupChatService.getChatHistory(assignmentId));
     }
 
-    @GetMapping("/api/v1/{assignmentId}/members")
+    @GetMapping("/api/v1/chat/{assignmentId}/members")
     @ResponseBody
     public ResponseEntity<ApiResponse<List<MemberResponse>>> getGroupMembers(
             @PathVariable Long assignmentId

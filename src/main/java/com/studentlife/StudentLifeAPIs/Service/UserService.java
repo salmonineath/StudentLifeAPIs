@@ -17,7 +17,7 @@ public interface UserService {
 
     UserResponse updateUser(Long id, UserUpdateRequest request);
 
-    ApiResponse<UserResponse> GetProfileInfo();
+    ApiResponse<UserResponse> getProfileInfo();
 
     ApiResponse<UserResponse> updateUserProfile(UserUpdateRequest request);
 

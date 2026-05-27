@@ -14,7 +14,7 @@ import com.studentlife.StudentLifeAPIs.Service.ScheduleService;
 import com.studentlife.StudentLifeAPIs.Specification.ScheduleSpecification;
 import com.studentlife.StudentLifeAPIs.Utils.AuthUtil;
 import com.studentlife.StudentLifeAPIs.Utils.ScheduleUtil;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,6 @@ import static com.studentlife.StudentLifeAPIs.Exception.ErrorsExceptionFactory.*
 
 @Service
 @RequiredArgsConstructor
-@SuppressWarnings("null")
 public class ScheduleServiceImpl implements ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
