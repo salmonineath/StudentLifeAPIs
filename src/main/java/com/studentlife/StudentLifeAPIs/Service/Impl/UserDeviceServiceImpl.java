@@ -8,6 +8,8 @@ import com.studentlife.StudentLifeAPIs.Entity.Users;
 import com.studentlife.StudentLifeAPIs.Mapper.DeviceMapper;
 import com.studentlife.StudentLifeAPIs.Repository.UserDeviceRepository;
 import com.studentlife.StudentLifeAPIs.Service.UserDeviceService;
+
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,7 +28,7 @@ public class UserDeviceServiceImpl implements UserDeviceService {
     private final DeviceMapper deviceMapper;
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public ApiResponse<UserDeviceResponse> registerDevice(Users users, RegisterDeviceRequest request, String ipAddress) {
 
         if (users == null) {
