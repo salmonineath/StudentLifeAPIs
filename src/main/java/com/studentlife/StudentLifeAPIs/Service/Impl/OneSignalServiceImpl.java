@@ -26,7 +26,7 @@ public class OneSignalServiceImpl implements OneSignalService {
 
     @Override
     public void sendPushToUser(String playerId, String title, String message) {
-        if (playerId == null || playerId.isBlank()) return;;
+        if (playerId == null || playerId.isBlank()) return;
 
         try {
             HttpHeaders headers = new HttpHeaders();
