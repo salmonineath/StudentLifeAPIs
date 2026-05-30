@@ -49,7 +49,7 @@ public class UserController {
             @RequestParam(required = false) String role,
             @RequestParam(defaultValue = "createAt,desc") String sort
     ) {
-        Sort parseSort = parseSort(sort)
+        Sort parseSort = parseSort(sort);
         PaginatedResponse<UserResponse> paginatedUsers = userService.getAllUsers(page, size, search, role, parseSort);
         return new ApiResponse<>(
                 200,
