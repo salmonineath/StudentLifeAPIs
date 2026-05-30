@@ -9,7 +9,7 @@ import com.studentlife.StudentLifeAPIs.DTO.Response.UserResponse;
 
 public interface UserService {
 
-    PaginatedResponse<UserResponse> getAllUsers(int page, int size);
+    PaginatedResponse<UserResponse> getAllUsers(int page, int size, String search, String role);
 
     UserResponse getUserById(Long id);
 

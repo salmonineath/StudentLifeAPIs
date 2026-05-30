@@ -20,14 +20,16 @@ public class UserController {
 
     private final UserService userService;
 
-    // ─── GET /api/v1/users?page=0&size=10&sort=createdAt,desc ───────────────
+    // ─── GET /api/v1/users?page=0&size=10&search=&role= ─────────────────────
     @GetMapping()
     @PreAuthorize("hasRole('admin')")
     public ApiResponse<?> getAllUsers(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String role
     ) {
-        PaginatedResponse<UserResponse> paginatedUsers = userService.getAllUsers(page, size);
+        PaginatedResponse<UserResponse> paginatedUsers = userService.getAllUsers(page, size, search, role);
         return new ApiResponse<>(
                 200,
                 true,

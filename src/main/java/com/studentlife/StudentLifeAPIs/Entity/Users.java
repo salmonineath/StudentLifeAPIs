@@ -56,6 +56,9 @@ public class Users implements UserDetails {
     @Column(name = "academic_year")
     private String academicYear;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private UserProfile profile;
+
     // Add this field inside Users.java, after the existing fields
     @Column(name = "onesignal_player_id")
     private String oneSignalPlayerId;

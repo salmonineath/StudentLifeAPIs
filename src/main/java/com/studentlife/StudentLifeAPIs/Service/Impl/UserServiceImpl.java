@@ -37,10 +37,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public PaginatedResponse<UserResponse> getAllUsers(int page, int size) {
+    public PaginatedResponse<UserResponse> getAllUsers(int page, int size, String search, String role) {
+        String searchParam = (search != null && !search.isBlank()) ? search.trim() : null;
+        String roleParam   = (role   != null && !role.isBlank()   && !role.equals("all")) ? role : null;
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Users> userPage = userRepository.findAll(pageable);
+        Page<Users> userPage = (searchParam == null && roleParam == null)
+                ? userRepository.findAll(pageable)
+                : userRepository.search(searchParam, roleParam, pageable);
 
         List<UserResponse> userResponses = userPage.getContent()
                 .stream()
