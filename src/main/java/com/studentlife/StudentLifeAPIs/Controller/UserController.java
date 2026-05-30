@@ -47,7 +47,7 @@ public class UserController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String role,
-            @RequestParam(defaultValue = "createAt,desc") String sort
+            @RequestParam(defaultValue = "createdAt,desc") String sort
     ) {
         Sort parseSort = parseSort(sort);
         PaginatedResponse<UserResponse> paginatedUsers = userService.getAllUsers(page, size, search, role, parseSort);

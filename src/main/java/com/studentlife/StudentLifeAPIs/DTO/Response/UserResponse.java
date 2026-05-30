@@ -19,6 +19,7 @@ public class UserResponse {
     private String university;
     private String major;
     private String academicYear;
+    private Boolean isActive;
     private Set<String> roles;
     private Instant createdAt;
     private Instant updatedAt;

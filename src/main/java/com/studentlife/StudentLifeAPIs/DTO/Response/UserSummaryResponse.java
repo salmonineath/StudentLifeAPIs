@@ -8,4 +8,5 @@ public class UserSummaryResponse {
     private Long id;
     private String fullname;
     private String username;
+    private Boolean isActive;
 }
