@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,11 +38,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public PaginatedResponse<UserResponse> getAllUsers(int page, int size, String search, String role) {
+    public PaginatedResponse<UserResponse> getAllUsers(int page, int size, String search, String role, Sort sort) {
         String searchParam = (search != null && !search.isBlank()) ? search.trim() : null;
         String roleParam   = (role   != null && !role.isBlank()   && !role.equals("all")) ? role : null;
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, sort);
         Page<Users> userPage = (searchParam == null && roleParam == null)
                 ? userRepository.findAll(pageable)
                 : userRepository.search(searchParam, roleParam, pageable);

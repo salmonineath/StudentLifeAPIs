@@ -286,6 +286,8 @@ All requests from a browser must include `credentials: "include"` (or `withCrede
 |-------|------|---------|-------|
 | `page` | int | `0` | Zero-based page index |
 | `size` | int | `10` | Items per page |
+| `search` | string | — | Optional. Filters by name, username, or email (case-insensitive, partial match) |
+| `role` | string | — | Optional. Filters by role. Use `"student"` or `"admin"`. Omit or pass `"all"` to return all roles |
 
 **Response** `200`
 

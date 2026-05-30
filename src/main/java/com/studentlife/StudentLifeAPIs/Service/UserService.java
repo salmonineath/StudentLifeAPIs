@@ -6,10 +6,11 @@ import com.studentlife.StudentLifeAPIs.DTO.Request.UserUpdateRequest;
 import com.studentlife.StudentLifeAPIs.DTO.Response.ApiResponse;
 import com.studentlife.StudentLifeAPIs.DTO.Response.PaginatedResponse;
 import com.studentlife.StudentLifeAPIs.DTO.Response.UserResponse;
+import org.springframework.data.domain.Sort;
 
 public interface UserService {
 
-    PaginatedResponse<UserResponse> getAllUsers(int page, int size, String search, String role);
+    PaginatedResponse<UserResponse> getAllUsers(int page, int size, String search, String role, Sort sort);
 
     UserResponse getUserById(Long id);
 
