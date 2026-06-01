@@ -60,6 +60,7 @@ public class SecurityConfig {
                         ).permitAll()
                                 .requestMatchers("/invite/accept", "/invite/decline").permitAll()
                                 .requestMatchers("/api/v1/me").authenticated()
+                                .requestMatchers("/api/v1/dashboard/**").authenticated()
                                 .requestMatchers("/api/v1/schedule/**").hasRole("student")
                                 .requestMatchers("/api/v1/admin/**").hasRole("admin")
 
