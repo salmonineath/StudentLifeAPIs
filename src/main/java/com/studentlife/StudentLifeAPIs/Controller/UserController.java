@@ -8,7 +8,6 @@ import com.studentlife.StudentLifeAPIs.DTO.Response.UserResponse;
 import com.studentlife.StudentLifeAPIs.Service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

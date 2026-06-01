@@ -145,25 +145,6 @@ public class GroupChatServiceImpl implements GroupChatService {
             }
         }
 
-        Users owner = assignment.getUser();
-        if (!owner.getId().equals(senderId)) {
-            oneSignalService.sendPushToUser(
-                    owner.getOneSignalPlayerId(),
-                    sender.getFullname(),
-                    request.getContent()
-            );
-        }
-
-        for (AssignmentMember member : members) {
-            if (!member.getUser().getId().equals(senderId)) {
-                oneSignalService.sendPushToUser(
-                        member.getUser().getOneSignalPlayerId(),
-                        sender.getFullname(),
-                        request.getContent()
-                );
-            }
-        }
-
         log.info("[Chat] Message sent in group {} by user {}", request.getAssignmentId(), senderId);
 
         return response;

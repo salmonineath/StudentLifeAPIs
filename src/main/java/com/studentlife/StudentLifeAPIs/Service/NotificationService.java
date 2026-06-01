@@ -10,6 +10,8 @@ import java.util.List;
 
 public interface NotificationService {
 
+    List<NotificationResponse> getAllNotifications(Long userId);
+
     ApiResponse<NotificationResponse> sendNotification(NotificationRequest request, NotificationType type, Users recipient);
 
     void sendRealTimeNotification(Long userId, NotificationResponse notification);
@@ -19,4 +21,8 @@ public interface NotificationService {
     long countUnread(Long userId);
 
     void markAllAsRead(Long userId);
+
+    void markAsRead(Long id, Long userId);
+
+    void deleteNotification(Long id, Long userId);
 }

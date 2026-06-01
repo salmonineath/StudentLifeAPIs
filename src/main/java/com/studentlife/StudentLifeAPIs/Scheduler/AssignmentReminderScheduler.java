@@ -1,10 +1,13 @@
 package com.studentlife.StudentLifeAPIs.Scheduler;
 
+import com.studentlife.StudentLifeAPIs.DTO.Request.NotificationRequest;
 import com.studentlife.StudentLifeAPIs.Entity.Assignments;
 import com.studentlife.StudentLifeAPIs.Entity.ReminderLog;
 import com.studentlife.StudentLifeAPIs.Enum.AssignmentStatus;
+import com.studentlife.StudentLifeAPIs.Enum.NotificationType;
 import com.studentlife.StudentLifeAPIs.Repository.AssignmentRepository;
 import com.studentlife.StudentLifeAPIs.Repository.ReminderLogRepository;
+import com.studentlife.StudentLifeAPIs.Service.NotificationService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +31,7 @@ public class AssignmentReminderScheduler {
     private final AssignmentRepository    assignmentRepository;
     private final ReminderLogRepository   reminderLogRepository;
     private final JavaMailSender          mailSender;
+    private final NotificationService notificationService;
 
     @Value("${app.backend.url}")
     private String backendUrl;
@@ -73,6 +77,12 @@ public class AssignmentReminderScheduler {
 
             try {
                 sendReminderEmail(assignment, label);
+
+                NotificationRequest notificationRequest = new NotificationRequest();
+                notificationRequest.setTitle("Assignment due in" + label);
+                notificationRequest.setMessage("\"" + assignment.getTitle() + "\" is due in " + label + ". Progress: " +
+                        assignment.getProgress() + "%");
+                notificationService.sendNotification(notificationRequest, NotificationType.REMINDER, assignment.getUser());
 
                 // Record that we sent it — prevents duplicate sends
                 reminderLogRepository.save(ReminderLog.builder()
