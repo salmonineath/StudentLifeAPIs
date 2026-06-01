@@ -75,7 +75,7 @@ public class DashboardServiceImpl implements DashboardService {
     // ── Greeting ──────────────────────────────────────────────────────────────
 
     private DashboardResponse.Greeting buildGreeting(Users user, LocalDateTime now, List<Assignments> allAssignments) {
-        String firstName = user.getFullname() != null && !user.getFullname().isBlank()
+        String lastName = user.getFullname() != null && !user.getFullname().isBlank()
                 ? user.getFullname().split("\\s+")[1]
                 : user.getUsername();
 
@@ -88,7 +88,7 @@ public class DashboardServiceImpl implements DashboardService {
                 .count();
 
         return DashboardResponse.Greeting.builder()
-                .firstName(firstName)
+                .firstName(lastName)
                 .deadlinesThisWeek((int) deadlinesThisWeek)
                 .build();
     }

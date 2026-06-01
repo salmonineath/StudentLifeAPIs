@@ -10,12 +10,16 @@ import com.studentlife.StudentLifeAPIs.Mapper.NotificationMapper;
 import com.studentlife.StudentLifeAPIs.Repository.NotificationRepository;
 import com.studentlife.StudentLifeAPIs.Service.NotificationService;
 import com.studentlife.StudentLifeAPIs.Service.OneSignalService;
+import com.studentlife.StudentLifeAPIs.Utils.AuthUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static com.studentlife.StudentLifeAPIs.Exception.ErrorsExceptionFactory.forbidden;
+import static com.studentlife.StudentLifeAPIs.Exception.ErrorsExceptionFactory.notFound;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +29,14 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationMapper notificationMapper;
     private final SimpMessagingTemplate messagingTemplate;
     private final OneSignalService oneSignalService;
+
+    @Override
+    public List<NotificationResponse> getAllNotifications(Long userId) {
+        return notificationRepository.findByRecipientIdOrderByCreatedAtDesc(userId)
+                .stream()
+                .map(notificationMapper::toResponse)
+                .toList();
+    }
 
     @Override
     @Transactional
@@ -87,5 +99,26 @@ public class NotificationServiceImpl implements NotificationService {
                 .findByRecipientIdAndIsReadFalse(userId);
         notifications.forEach(n -> n.setRead(true));
         notificationRepository.saveAll(notifications);
+    }
+
+    @Override
+    public void markAsRead(Long id, Long userId) {
+        Notification notification = notificationRepository.findById(id)
+                .orElseThrow(() -> notFound("Notification not found."));
+        if (!notification.getRecipient().getId().equals(userId)) {
+            throw forbidden("You do not have access to this notification");
+        }
+        notification.setRead(true);
+        notificationRepository.save(notification);
+    }
+
+    @Override
+    public void deleteNotification(Long id, Long userId) {
+        Notification notification = notificationRepository.findById(id)
+                .orElseThrow(() -> notFound("Notification not found."));
+        if (!notification.getRecipient().getId().equals(userId)) {
+            throw forbidden("You do not have access to this notification");
+        }
+        notificationRepository.delete(notification);
     }
 }
