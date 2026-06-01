@@ -10,6 +10,8 @@ import org.springframework.stereotype.Repository;
 import java.time.Instant;
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
+
 @Repository
 public interface GroupMessageRepository extends JpaRepository<GroupMessage, Long> {
 
@@ -26,4 +28,6 @@ public interface GroupMessageRepository extends JpaRepository<GroupMessage, Long
     @Modifying
     @Query("DELETE FROM GroupMessage m WHERE m.createdAt < :cutoff")
     void deleteOlderThan(@Param("cutoff") Instant cutoff);
+
+    List<GroupMessage> findByAssignmentIdInOrderByCreatedAtDesc(List<Long> assignmentIds, Pageable pageable);
 }

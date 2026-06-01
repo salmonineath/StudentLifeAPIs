@@ -31,4 +31,6 @@ public interface AssignmentMemberRepository extends JpaRepository<AssignmentMemb
     boolean existsByUser(Users user);
     List<AssignmentMember> findByAssignmentAndStatus(Assignments assignment, AssignmentMemberStatus status);
 
+    List<AssignmentMember> findByAssignmentIdInAndStatus(List<Long> assignmentIds, AssignmentMemberStatus status);
+
 }
