@@ -91,7 +91,7 @@ public class SecurityConfig {
                 "http://localhost:3000",
                 "http://localhost:5173",
                 "https://student-life-platform.vercel.app",
-                "https://student-life-admin-portal-8fx5.vercel.app"
+                "https://admin-studentlfe.vercel.app"
 
         ));
 
