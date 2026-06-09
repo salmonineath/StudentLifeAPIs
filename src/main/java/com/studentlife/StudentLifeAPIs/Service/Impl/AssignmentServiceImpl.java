@@ -256,6 +256,9 @@ public class AssignmentServiceImpl implements AssignmentService {
         NotificationRequest notificationRequest = new NotificationRequest();
         notificationRequest.setTitle("Assignment Invitation");
         notificationRequest.setMessage(currentUser.getFullname() + " invited you to join \"" + assignment.getTitle() + "\".");
+        // Invite refers to an assignment — link directly to it (type=INVITE alone routes to /groups).
+        notificationRequest.setReferenceId(assignment.getId());
+        notificationRequest.setLink("/assignments/" + assignment.getId());
 
         notificationService.sendNotification(notificationRequest, NotificationType.INVITE, invitedUser);
 
@@ -303,6 +306,8 @@ public class AssignmentServiceImpl implements AssignmentService {
         NotificationRequest notificationRequest = new NotificationRequest();
         notificationRequest.setTitle("Invite Accepted");
         notificationRequest.setMessage(currentUser.getFullname() + " accepted your invitation to \"" + assignment.getTitle() + "\".");
+        notificationRequest.setReferenceId(assignment.getId());
+        notificationRequest.setLink("/assignments/" + assignment.getId());
         notificationService.sendNotification(notificationRequest, NotificationType.INVITE, assignment.getUser());
 
         return new ApiResponse<>(
@@ -338,6 +343,8 @@ public class AssignmentServiceImpl implements AssignmentService {
         NotificationRequest notificationRequest = new NotificationRequest();
         notificationRequest.setTitle("Invite Declined");
         notificationRequest.setMessage(currentUser.getFullname() + " declined your invitation to \"" + assignment.getTitle() + "\".");
+        notificationRequest.setReferenceId(assignment.getId());
+        notificationRequest.setLink("/assignments/" + assignment.getId());
         notificationService.sendNotification(notificationRequest, NotificationType.INVITE, assignment.getUser());
 
         return new ApiResponse<>(
@@ -418,6 +425,8 @@ public class AssignmentServiceImpl implements AssignmentService {
             NotificationRequest notificationRequest = new NotificationRequest();
             notificationRequest.setTitle("Invite Accepted");
             notificationRequest.setMessage(invitedUser.getFullname() + " accepted your invitation to \"" + assignment.getTitle() + "\".");
+            notificationRequest.setReferenceId(assignment.getId());
+            notificationRequest.setLink("/assignments/" + assignment.getId());
             notificationService.sendNotification(notificationRequest, NotificationType.INVITE, assignment.getUser());
 
             emailService.sendInviteAcceptedEmail(
@@ -434,6 +443,8 @@ public class AssignmentServiceImpl implements AssignmentService {
             NotificationRequest notificationRequest = new NotificationRequest();
             notificationRequest.setTitle("Invite Declined");
             notificationRequest.setMessage(invitedUser.getFullname() + " declined your invitation to \"" + assignment.getTitle() + "\".");
+            notificationRequest.setReferenceId(assignment.getId());
+            notificationRequest.setLink("/assignments/" + assignment.getId());
             notificationService.sendNotification(notificationRequest, NotificationType.INVITE, assignment.getUser());
 
             emailService.sendInviteDeclinedEmail(

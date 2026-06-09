@@ -22,4 +22,9 @@ public class NotificationResponse {
     private NotificationType type;
     private boolean isRead;
     private Instant createdAt;
+
+    // Deep-linking fields. Optional/nullable for backwards compatibility — when null
+    // the frontend falls back to the section route derived from `type`.
+    private Long referenceId;
+    private String link;
 }

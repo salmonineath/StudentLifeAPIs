@@ -8,6 +8,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +26,7 @@ public class OneSignalServiceImpl implements OneSignalService {
     private final RestTemplate restTemplate;
 
     @Override
-    public void sendPushToUser(String playerId, String title, String message) {
+    public void sendPushToUser(String playerId, String title, String message, Long referenceId, String link) {
         if (playerId == null || playerId.isBlank()) return;
 
         try {
@@ -33,12 +34,24 @@ public class OneSignalServiceImpl implements OneSignalService {
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.setBearerAuth(apiKey);
 
-            Map<String, Object> body = Map.of(
-                    "app_id", appId,
-                    "include_player_ids", List.of(playerId),
-                    "headings", Map.of("en", title),
-                    "contents", Map.of("en", message)
-            );
+            // Deep-linking payload so click-through works from push too. OneSignal "data"
+            // values must be strings; the client mirrors the in-app resolveDestination() logic.
+            Map<String, Object> data = new HashMap<>();
+            if (referenceId != null) {
+                data.put("referenceId", String.valueOf(referenceId));
+            }
+            if (link != null && !link.isBlank()) {
+                data.put("link", link);
+            }
+
+            Map<String, Object> body = new HashMap<>();
+            body.put("app_id", appId);
+            body.put("include_player_ids", List.of(playerId));
+            body.put("headings", Map.of("en", title));
+            body.put("contents", Map.of("en", message));
+            if (!data.isEmpty()) {
+                body.put("data", data);
+            }
 
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
 

@@ -133,6 +133,9 @@ public class GroupChatServiceImpl implements GroupChatService {
             NotificationRequest notificationRequest = new NotificationRequest();
             notificationRequest.setTitle(sender.getFullname());
             notificationRequest.setMessage(request.getContent());
+            // Group chat is per-assignment — referenceId is the assignment (group) id; link opens it.
+            notificationRequest.setReferenceId(assignment.getId());
+            notificationRequest.setLink("/assignments/" + assignment.getId());
             notificationService.sendNotification(notificationRequest, NotificationType.CHAT, assignment.getUser());
         }
 
@@ -141,6 +144,8 @@ public class GroupChatServiceImpl implements GroupChatService {
                 NotificationRequest notificationRequest = new NotificationRequest();
                 notificationRequest.setTitle(sender.getFullname());
                 notificationRequest.setMessage(request.getContent());
+                notificationRequest.setReferenceId(assignment.getId());
+                notificationRequest.setLink("/assignments/" + assignment.getId());
                 notificationService.sendNotification(notificationRequest, NotificationType.CHAT, member.getUser());
             }
         }

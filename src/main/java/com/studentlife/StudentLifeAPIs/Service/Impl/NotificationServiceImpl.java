@@ -10,7 +10,6 @@ import com.studentlife.StudentLifeAPIs.Mapper.NotificationMapper;
 import com.studentlife.StudentLifeAPIs.Repository.NotificationRepository;
 import com.studentlife.StudentLifeAPIs.Service.NotificationService;
 import com.studentlife.StudentLifeAPIs.Service.OneSignalService;
-import com.studentlife.StudentLifeAPIs.Utils.AuthUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -18,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.studentlife.StudentLifeAPIs.Exception.ErrorsExceptionFactory.badRequest;
 import static com.studentlife.StudentLifeAPIs.Exception.ErrorsExceptionFactory.forbidden;
 import static com.studentlife.StudentLifeAPIs.Exception.ErrorsExceptionFactory.notFound;
 
@@ -42,11 +42,15 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional
     public ApiResponse<NotificationResponse> sendNotification(NotificationRequest request, NotificationType type, Users recipient) {
 
+        String link = normalizeLink(request.getLink());
+
         Notification notification = new Notification();
         notification.setRecipient(recipient);
         notification.setTitle(request.getTitle());
         notification.setMessage(request.getMessage());
         notification.setType(type);
+        notification.setReferenceId(request.getReferenceId());
+        notification.setLink(link);
         notification.setRead(false);
 
         Notification saved = notificationRepository.save(notification);
@@ -57,7 +61,9 @@ public class NotificationServiceImpl implements NotificationService {
         oneSignalService.sendPushToUser(
                 recipient.getOneSignalPlayerId(),
                 request.getTitle(),
-                request.getMessage()
+                request.getMessage(),
+                saved.getReferenceId(),
+                saved.getLink()
         );
 
         return new ApiResponse<>(
@@ -68,6 +74,22 @@ public class NotificationServiceImpl implements NotificationService {
         );
     }
 
+
+    /**
+     * Validates that a deep-link is a safe relative in-app path and never an absolute/external URL.
+     * Returns null for blank input. Rejects protocol-relative ("//host") and scheme-bearing
+     * ("http://", "javascript:") values to avoid open-redirect risk on the frontend.
+     */
+    private String normalizeLink(String link) {
+        if (link == null || link.isBlank()) {
+            return null;
+        }
+        String trimmed = link.trim();
+        if (!trimmed.startsWith("/") || trimmed.startsWith("//") || trimmed.contains("://")) {
+            throw badRequest("link must be a relative in-app path starting with '/', e.g. \"/assignments/42\".");
+        }
+        return trimmed;
+    }
 
     @Override
     public void sendRealTimeNotification(Long userId, NotificationResponse notification) {

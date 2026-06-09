@@ -82,6 +82,10 @@ public class AssignmentReminderScheduler {
                 notificationRequest.setTitle("Assignment due in" + label);
                 notificationRequest.setMessage("\"" + assignment.getTitle() + "\" is due in " + label + ". Progress: " +
                         assignment.getProgress() + "%");
+                // This reminder is about an assignment — deep-link straight to it. An explicit link is
+                // required because type=REMINDER would otherwise route to the schedules section.
+                notificationRequest.setReferenceId(assignment.getId());
+                notificationRequest.setLink("/assignments/" + assignment.getId());
                 notificationService.sendNotification(notificationRequest, NotificationType.REMINDER, assignment.getUser());
 
                 // Record that we sent it — prevents duplicate sends

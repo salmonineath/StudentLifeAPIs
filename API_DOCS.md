@@ -1354,7 +1354,9 @@ Subscribe to receive real-time in-app notifications for the current user.
   "message": "Let's meet at 3pm.",
   "type": "CHAT",
   "isRead": false,
-  "createdAt": "2026-05-26T14:35:00Z"
+  "createdAt": "2026-05-26T14:35:00Z",
+  "referenceId": 10,
+  "link": "/assignments/10"
 }
 ```
 
@@ -1434,9 +1436,18 @@ Subscribe to receive real-time in-app notifications for the current user.
 ```json
 {
   "title": "Reminder",
-  "message": "Your assignment is due tomorrow."
+  "message": "Your assignment is due tomorrow.",
+  "referenceId": 10,
+  "link": "/assignments/10"
 }
 ```
+
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| `title` | string | Yes | |
+| `message` | string | Yes | |
+| `referenceId` | number | No | Id of the entity the notification refers to (e.g. assignment id). Omit/`null` if not applicable. |
+| `link` | string | No | Explicit **relative** in-app path to open, e.g. `/assignments/10`. Must start with `/` and must **not** be an absolute URL (`http://...`, `//host`) — such values are rejected with `400`. |
 
 **Response** `201`
 
@@ -1452,7 +1463,9 @@ Subscribe to receive real-time in-app notifications for the current user.
     "message": "Your assignment is due tomorrow.",
     "type": "SYSTEM",
     "isRead": false,
-    "createdAt": "2026-05-26T14:00:00Z"
+    "createdAt": "2026-05-26T14:00:00Z",
+    "referenceId": 10,
+    "link": "/assignments/10"
   }
 }
 ```
@@ -1478,12 +1491,16 @@ Subscribe to receive real-time in-app notifications for the current user.
     "message": "Let's meet at 3pm.",
     "type": "CHAT",
     "isRead": false,
-    "createdAt": "2026-05-26T14:35:00Z"
+    "createdAt": "2026-05-26T14:35:00Z",
+    "referenceId": 10,
+    "link": "/assignments/10"
   }
 ]
 ```
 
-**Notes** — Returns only unread notifications for the currently authenticated user.
+**Notes**
+- Returns only unread notifications for the currently authenticated user.
+- `referenceId` / `link` are **deep-linking** fields. Both are optional and may be `null`. Prefer `referenceId` (the frontend builds `/<section>/<referenceId>` from `type`); use `link` as-is when present (it overrides the derived route). `link` is always a relative in-app path.
 
 ---
 
@@ -1649,6 +1666,7 @@ These endpoints are for **email link handling** — the links embedded in invita
 - Call this once after the user grants push notification permission in the browser/app.
 - The stored Player ID is used to send push notifications whenever the user receives a message, assignment reminder, or invite.
 - Returns `400` if `playerId` is missing or blank.
+- Outgoing pushes carry the deep-linking fields in OneSignal's `data` object so click-through can route to the right item: `data.referenceId` (string) and `data.link` (relative path). Either may be absent. Mirror the in-app routing logic: prefer `link`, then `referenceId`, then the section fallback.
 
 ---
 
