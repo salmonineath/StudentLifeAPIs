@@ -90,11 +90,7 @@ public class UserServiceImpl implements UserService {
     public UserResponse updateUser(Long id, UserUpdateRequest request) {
         Users user = findUserOrThrow(id);
 
-        if (request.getFullname() != null)      user.setFullname(request.getFullname());
-        if (request.getPhone() != null)         user.setPhone(request.getPhone());
-        if (request.getUniversity() != null)    user.setUniversity(request.getUniversity());
-        if (request.getMajor() != null)         user.setMajor(request.getMajor());
-        if (request.getAcademic_year() != null) user.setAcademicYear(request.getAcademic_year());
+        userMapper.updateUserEntity(request, user);
 
         return userMapper.toUserResponse(userRepository.save(user));
     }

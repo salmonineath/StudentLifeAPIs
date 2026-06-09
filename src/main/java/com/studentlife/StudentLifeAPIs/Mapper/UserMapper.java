@@ -44,7 +44,6 @@ public interface UserMapper {
     @Mapping(target = "updatedAt",          ignore = true)
     Users toUserEntityRegisterUser(RegisterRequest request);
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id",                 ignore = true)
     @Mapping(target = "username",           ignore = true)
     @Mapping(target = "email",              ignore = true)
