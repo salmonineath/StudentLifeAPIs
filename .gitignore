@@ -36,5 +36,5 @@ build/
 
 ### env file
 .env
-.API_DOC.md
+API_DOCS.md
 TECH_DEBT.md
