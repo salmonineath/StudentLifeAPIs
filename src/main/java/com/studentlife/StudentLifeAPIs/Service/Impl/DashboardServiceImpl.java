@@ -75,9 +75,12 @@ public class DashboardServiceImpl implements DashboardService {
     // ── Greeting ──────────────────────────────────────────────────────────────
 
     private DashboardResponse.Greeting buildGreeting(Users user, LocalDateTime now, List<Assignments> allAssignments) {
-        String lastName = user.getFullname() != null && !user.getFullname().isBlank()
-                ? user.getFullname().split("\\s+")[1]
-                : user.getUsername();
+        // Use the first name token for the greeting; fall back to username.
+        // (Previous code indexed [1] and crashed for any single-word name.)
+        String displayName = user.getUsername();
+        if (user.getFullname() != null && !user.getFullname().isBlank()) {
+            displayName = user.getFullname().trim().split("\\s+")[0];
+        }
 
         LocalDateTime weekEnd = now.toLocalDate().plusDays(7).atStartOfDay();
         long deadlinesThisWeek = allAssignments.stream()
@@ -88,7 +91,7 @@ public class DashboardServiceImpl implements DashboardService {
                 .count();
 
         return DashboardResponse.Greeting.builder()
-                .firstName(lastName)
+                .firstName(displayName)
                 .deadlinesThisWeek((int) deadlinesThisWeek)
                 .build();
     }

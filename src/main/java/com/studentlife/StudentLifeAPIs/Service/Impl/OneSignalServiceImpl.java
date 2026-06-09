@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -26,6 +27,7 @@ public class OneSignalServiceImpl implements OneSignalService {
     private final RestTemplate restTemplate;
 
     @Override
+    @Async("taskExecutor")
     public void sendPushToUser(String playerId, String title, String message, Long referenceId, String link) {
         if (playerId == null || playerId.isBlank()) return;
 

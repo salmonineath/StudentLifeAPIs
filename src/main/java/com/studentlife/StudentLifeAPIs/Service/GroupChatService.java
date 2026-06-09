@@ -5,6 +5,7 @@ import com.studentlife.StudentLifeAPIs.DTO.Response.ApiResponse;
 import com.studentlife.StudentLifeAPIs.DTO.Response.GroupMessageResponse;
 import com.studentlife.StudentLifeAPIs.DTO.Response.GroupResponse;
 import com.studentlife.StudentLifeAPIs.DTO.Response.MemberResponse;
+import com.studentlife.StudentLifeAPIs.DTO.Response.PaginatedResponse;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public interface GroupChatService {
 
     GroupMessageResponse sendMessage(ChatMessageRequest request, Long senderId);
 
-    ApiResponse<List<GroupMessageResponse>> getChatHistory(Long assignmentId);
+    ApiResponse<PaginatedResponse<GroupMessageResponse>> getChatHistory(Long assignmentId, int page, int size);
 
     ApiResponse<?> clearChatHistory(Long assignmentId);
 

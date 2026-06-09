@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import jakarta.validation.constraints.NotBlank;
@@ -56,6 +58,10 @@ public class Users implements UserDetails {
     @Column(name = "academic_year")
     private String academicYear;
 
+    // Excluded from equals/hashCode/toString to avoid infinite recursion with the
+    // bidirectional UserProfile.user association.
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private UserProfile profile;
 

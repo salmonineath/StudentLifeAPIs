@@ -48,25 +48,31 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
 
-        // Extract username from token
-        String username = jwtService.extractUsername(token);
+        // Parsing an expired/tampered token (or a refresh token whose subject is not a
+        // username) throws — never let that bubble up as a 500. Treat it as unauthenticated
+        // and let the entry point return a clean 401 for protected resources.
+        try {
+            String username = jwtService.extractUsername(token);
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            if (jwtService.isTokenValid(token, userDetails)) {
+                if (jwtService.isTokenValid(token, userDetails)) {
 
-                UsernamePasswordAuthenticationToken authenticationToken =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-                                userDetails.getAuthorities()
-                        );
+                    UsernamePasswordAuthenticationToken authenticationToken =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails,
+                                    null,
+                                    userDetails.getAuthorities()
+                            );
 
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                log.debug("JWT authenticated user: {}", username);
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                    log.debug("JWT authenticated user: {}", username);
+                }
             }
+        } catch (Exception e) {
+            log.debug("JWT authentication skipped (invalid token): {}", e.getMessage());
         }
 
         filterChain.doFilter(request, response);

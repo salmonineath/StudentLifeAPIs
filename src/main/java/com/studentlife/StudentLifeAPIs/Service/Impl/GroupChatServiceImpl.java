@@ -15,6 +15,10 @@ import com.studentlife.StudentLifeAPIs.Service.NotificationService;
 import com.studentlife.StudentLifeAPIs.Service.OneSignalService;
 import com.studentlife.StudentLifeAPIs.Service.PresenceService;
 import com.studentlife.StudentLifeAPIs.Utils.AuthUtil;
+import com.studentlife.StudentLifeAPIs.DTO.Response.PaginatedResponse;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -156,7 +160,7 @@ public class GroupChatServiceImpl implements GroupChatService {
     }
 
     @Override
-    public ApiResponse<List<GroupMessageResponse>> getChatHistory(Long assignmentId) {
+    public ApiResponse<PaginatedResponse<GroupMessageResponse>> getChatHistory(Long assignmentId, int page, int size) {
         Users currentUser = authUtil.getAuthenticatedUser();
 
         Assignments assignment = assignmentRepository.findById(assignmentId)
@@ -173,8 +177,11 @@ public class GroupChatServiceImpl implements GroupChatService {
             throw forbidden("You are not a member of this group.");
         }
 
-        List<GroupMessageResponse> messages = groupMessageMapper.toResponseList(
-                groupMessageRepository.findByAssignmentIdOrderByCreatedAtAsc(assignmentId)
+        // Newest-first paging so page 0 returns the most recent messages.
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        PaginatedResponse<GroupMessageResponse> messages = PaginatedResponse.from(
+                groupMessageRepository.findByAssignmentId(assignmentId, pageable)
+                        .map(groupMessageMapper::toResponse)
         );
 
         return new ApiResponse<>(200, true, "Chat history retrieved.", messages);

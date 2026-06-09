@@ -5,6 +5,7 @@ import com.studentlife.StudentLifeAPIs.DTO.Response.ApiResponse;
 import com.studentlife.StudentLifeAPIs.DTO.Response.GroupMessageResponse;
 import com.studentlife.StudentLifeAPIs.DTO.Response.GroupResponse;
 import com.studentlife.StudentLifeAPIs.DTO.Response.MemberResponse;
+import com.studentlife.StudentLifeAPIs.DTO.Response.PaginatedResponse;
 import com.studentlife.StudentLifeAPIs.Service.GroupChatService;
 import com.studentlife.StudentLifeAPIs.Utils.AuthUtil;
 import lombok.RequiredArgsConstructor;
@@ -50,10 +51,14 @@ public class GroupChatController {
 
     @GetMapping("/api/v1/chat/{assignmentId}/history")
     @ResponseBody
-    public ResponseEntity<ApiResponse<List<GroupMessageResponse>>> getHistory(
-            @PathVariable Long assignmentId
+    public ResponseEntity<ApiResponse<PaginatedResponse<GroupMessageResponse>>> getHistory(
+            @PathVariable Long assignmentId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "30") int size
     ) {
-        return ResponseEntity.ok(groupChatService.getChatHistory(assignmentId));
+        int safeSize = Math.min(Math.max(size, 1), 100);
+        int safePage = Math.max(page, 0);
+        return ResponseEntity.ok(groupChatService.getChatHistory(assignmentId, safePage, safeSize));
     }
 
     @GetMapping("/api/v1/chat/{assignmentId}/members")

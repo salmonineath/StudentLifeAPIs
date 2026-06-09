@@ -28,9 +28,13 @@ target/
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
+/doc/
+/claude/
 
 ### VS Code ###
 .vscode/
 
 ### env file
 .env
+.API_DOC.md
+TECH_DEBT.md

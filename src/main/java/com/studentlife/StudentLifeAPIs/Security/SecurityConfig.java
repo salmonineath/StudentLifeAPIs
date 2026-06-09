@@ -1,5 +1,6 @@
 package com.studentlife.StudentLifeAPIs.Security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.studentlife.StudentLifeAPIs.Jwt.JwtAccessDeniedHandler;
 import com.studentlife.StudentLifeAPIs.Jwt.JwtAuthFilter;
 import com.studentlife.StudentLifeAPIs.Jwt.JwtAuthenticationEntryPoint;
@@ -30,6 +31,7 @@ public class SecurityConfig {
     private final JwtAccessDeniedHandler accessDeniedHandler;
     private final JwtAuthenticationEntryPoint authenticationEntryPoint;
     private final JwtAuthFilter authFilter;
+    private final ObjectMapper objectMapper;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -68,7 +70,8 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
 
-                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new RateLimitingFilter(objectMapper), JwtAuthFilter.class);
 
                 return http.build();
     }

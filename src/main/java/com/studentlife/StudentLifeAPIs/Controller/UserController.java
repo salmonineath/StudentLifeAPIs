@@ -61,16 +61,16 @@ public class UserController {
     @PostMapping
     @PreAuthorize("hasRole('admin')")
     public ResponseEntity<ApiResponse<UserResponse>> createdUser(
-            @RequestBody UserCreateRequest request
+            @Valid @RequestBody UserCreateRequest request
             ) {
         UserResponse created = userService.createUser(request);
 
-        return ResponseEntity.ok((new ApiResponse<>(
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(
                 HttpStatus.CREATED.value(),
                 true,
                 "User created successfully.",
                 created
-        )));
+        ));
     }
 
     // ─── GET /api/v1/users/{id} ──────────────────────────────────────────────

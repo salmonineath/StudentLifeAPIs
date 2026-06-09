@@ -50,6 +50,7 @@ public class AuthServiceImpl implements AuthService {
     private final DeviceTrackingService deviceTrackingService;
 
     @Override
+    @Transactional
     public ApiResponse<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
 
         // ========================

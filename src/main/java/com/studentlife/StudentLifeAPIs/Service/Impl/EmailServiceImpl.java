@@ -4,12 +4,15 @@ import com.studentlife.StudentLifeAPIs.Service.EmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
@@ -20,6 +23,7 @@ public class EmailServiceImpl implements EmailService {
     private String frontendUrl;
 
     @Override
+    @Async("taskExecutor")
     public void sendInviteEmail(
             String toEmail,
             String inviterName,
@@ -62,12 +66,14 @@ public class EmailServiceImpl implements EmailService {
             helper.setSubject(inviterName + " invited you to \"" + assignmentTitle + "\"");
             helper.setText(html, true);
             mailSender.send(message);
-        } catch (MessagingException e) {
-            throw new RuntimeException("Failed to send invite email.", e);
+        } catch (MessagingException | RuntimeException e) {
+            // Best-effort: email delivery must not break the invite flow.
+            log.warn("Failed to send invite email to {}: {}", toEmail, e.getMessage());
         }
     }
 
     @Override
+    @Async("taskExecutor")
     public void sendInviteAcceptedEmail(String toEmail, String acceptorName, String assignmentTitle) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(toEmail);
@@ -77,10 +83,15 @@ public class EmailServiceImpl implements EmailService {
                         acceptorName + " accepted your invitation to \"" + assignmentTitle + "\".\n\n" +
                         "— StudentLife"
         );
-        mailSender.send(message);
+        try {
+            mailSender.send(message);
+        } catch (RuntimeException e) {
+            log.warn("Failed to send invite-accepted email to {}: {}", toEmail, e.getMessage());
+        }
     }
 
     @Override
+    @Async("taskExecutor")
     public void sendInviteDeclinedEmail(String toEmail, String declinerName, String assignmentTitle) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(toEmail);
@@ -90,6 +101,10 @@ public class EmailServiceImpl implements EmailService {
                         declinerName + " declined your invitation to \"" + assignmentTitle + "\".\n\n" +
                         "— StudentLife"
         );
-        mailSender.send(message);
+        try {
+            mailSender.send(message);
+        } catch (RuntimeException e) {
+            log.warn("Failed to send invite-declined email to {}: {}", toEmail, e.getMessage());
+        }
     }
 }

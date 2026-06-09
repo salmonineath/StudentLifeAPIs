@@ -130,6 +130,7 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Override
+    @Transactional
     public ApiResponse<AssignmentResponse> updateAssignment(Long id, AssignmentRequest request) {
         Users currentUser = authUtil.getAuthenticatedUser();
 
@@ -137,11 +138,10 @@ public class AssignmentServiceImpl implements AssignmentService {
                 .orElseThrow(() -> notFound("Assignment not found."));
 
         boolean isOwner = assignment.getUser().getId().equals(currentUser.getId());
-        boolean isMember = assignmentMemberRepository.existsByAssignmentIdAndUserIdAndStatus(
-                id, currentUser.getId(), AssignmentMemberStatus.ACCEPTED
-        );
 
-        if (!isOwner && isMember) {
+        // Only the owner may modify an assignment. The previous condition
+        // (!isOwner && isMember) let any authenticated non-member through.
+        if (!isOwner) {
             throw forbidden("You do not have access to this resource.");
         }
 
@@ -161,6 +161,7 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Override
+    @Transactional
     public ApiResponse<AssignmentResponse> updateProgress(Long id, UpdateProgressRequest request) {
         Users currentUser = authUtil.getAuthenticatedUser();
 
@@ -214,6 +215,7 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Override
+    @Transactional
     public ApiResponse<?> inviteUser(Long assignmentId, InviteRequest request) {
         Users currentUser = authUtil.getAuthenticatedUser();
 
@@ -225,7 +227,7 @@ public class AssignmentServiceImpl implements AssignmentService {
         }
 
         Users invitedUser = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> notFound("User with email " + request.getEmail() + "not found."));
+                .orElseThrow(() -> notFound("No user found with that email."));
 
         if (invitedUser.getId().equals(currentUser.getId())) {
             throw validation("You cannot invite yourself.");
@@ -318,6 +320,7 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Override
+    @Transactional
     public ApiResponse<?> declineInvite(Long assignmentId) {
         Users currentUser = authUtil.getAuthenticatedUser();
 

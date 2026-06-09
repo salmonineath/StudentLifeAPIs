@@ -3,16 +3,14 @@ package com.studentlife.StudentLifeAPIs.Controller;
 import com.studentlife.StudentLifeAPIs.DTO.Request.NotificationRequest;
 import com.studentlife.StudentLifeAPIs.DTO.Response.ApiResponse;
 import com.studentlife.StudentLifeAPIs.DTO.Response.NotificationResponse;
+import com.studentlife.StudentLifeAPIs.DTO.Response.PaginatedResponse;
 import com.studentlife.StudentLifeAPIs.Entity.Users;
 import com.studentlife.StudentLifeAPIs.Enum.NotificationType;
 import com.studentlife.StudentLifeAPIs.Service.NotificationService;
 import com.studentlife.StudentLifeAPIs.Utils.AuthUtil;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/notification")
@@ -23,21 +21,24 @@ public class NotificationController {
     private final AuthUtil authUtil;
 
     @GetMapping
-    public  ResponseEntity<ApiResponse<List<NotificationResponse>>> getAllNotification() {
+    public  ResponseEntity<ApiResponse<PaginatedResponse<NotificationResponse>>> getAllNotification(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
         Users currentUser = authUtil.getAuthenticatedUser();
+        int safeSize = Math.min(Math.max(size, 1), 100);
+        int safePage = Math.max(page, 0);
         return ResponseEntity.ok(new ApiResponse<>(
                 200,
                 true,
                 "Notification retrieved",
-                notificationService.getAllNotifications(
-                        currentUser.getId()
-                )
+                notificationService.getAllNotifications(currentUser.getId(), safePage, safeSize)
         ));
     }
 
     @PostMapping("/send")
     public ResponseEntity<ApiResponse<NotificationResponse>> send(
-            @RequestBody NotificationRequest request,
+            @jakarta.validation.Valid @RequestBody NotificationRequest request,
             @RequestParam NotificationType type
     ) {
         Users currentUser = authUtil.getAuthenticatedUser();
@@ -45,13 +46,18 @@ public class NotificationController {
     }
 
     @GetMapping("/unread")
-    public  ResponseEntity<ApiResponse<List<NotificationResponse>>> getUnread() {
+    public  ResponseEntity<ApiResponse<PaginatedResponse<NotificationResponse>>> getUnread(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
         Users currentUser = authUtil.getAuthenticatedUser();
+        int safeSize = Math.min(Math.max(size, 1), 100);
+        int safePage = Math.max(page, 0);
         return ResponseEntity.ok(new ApiResponse<>(
                 200,
                 true,
                 "Get un read notification successfully",
-                notificationService.getUnreadNotifications(currentUser.getId())
+                notificationService.getUnreadNotifications(currentUser.getId(), safePage, safeSize)
         ));
     }
 

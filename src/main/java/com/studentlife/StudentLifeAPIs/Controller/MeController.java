@@ -3,6 +3,7 @@ package com.studentlife.StudentLifeAPIs.Controller;
 import com.studentlife.StudentLifeAPIs.DTO.Request.UserUpdateRequest;
 import com.studentlife.StudentLifeAPIs.DTO.Response.ApiResponse;
 import com.studentlife.StudentLifeAPIs.Service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class MeController {
     }
 
     @PatchMapping("/update-profile")
-    public ResponseEntity<ApiResponse<?>> updatedUserProfile(@RequestBody UserUpdateRequest request) {
+    public ResponseEntity<ApiResponse<?>> updatedUserProfile(@Valid @RequestBody UserUpdateRequest request) {
         return ResponseEntity.status(200).body(userService.updateUserProfile(request));
     }
 }

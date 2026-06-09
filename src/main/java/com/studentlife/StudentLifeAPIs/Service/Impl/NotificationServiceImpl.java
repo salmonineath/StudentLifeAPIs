@@ -3,6 +3,7 @@ package com.studentlife.StudentLifeAPIs.Service.Impl;
 import com.studentlife.StudentLifeAPIs.DTO.Request.NotificationRequest;
 import com.studentlife.StudentLifeAPIs.DTO.Response.ApiResponse;
 import com.studentlife.StudentLifeAPIs.DTO.Response.NotificationResponse;
+import com.studentlife.StudentLifeAPIs.DTO.Response.PaginatedResponse;
 import com.studentlife.StudentLifeAPIs.Entity.Notification;
 import com.studentlife.StudentLifeAPIs.Entity.Users;
 import com.studentlife.StudentLifeAPIs.Enum.NotificationType;
@@ -11,6 +12,8 @@ import com.studentlife.StudentLifeAPIs.Repository.NotificationRepository;
 import com.studentlife.StudentLifeAPIs.Service.NotificationService;
 import com.studentlife.StudentLifeAPIs.Service.OneSignalService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,11 +34,12 @@ public class NotificationServiceImpl implements NotificationService {
     private final OneSignalService oneSignalService;
 
     @Override
-    public List<NotificationResponse> getAllNotifications(Long userId) {
-        return notificationRepository.findByRecipientIdOrderByCreatedAtDesc(userId)
-                .stream()
-                .map(notificationMapper::toResponse)
-                .toList();
+    public PaginatedResponse<NotificationResponse> getAllNotifications(Long userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return PaginatedResponse.from(
+                notificationRepository.findByRecipientIdOrderByCreatedAtDesc(userId, pageable)
+                        .map(notificationMapper::toResponse)
+        );
     }
 
     @Override
@@ -102,12 +106,12 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public List<NotificationResponse> getUnreadNotifications(Long userId) {
-        return notificationRepository
-                .findByRecipientIdAndIsReadFalse(userId)
-                .stream()
-                .map(notificationMapper::toResponse)
-                .toList();
+    public PaginatedResponse<NotificationResponse> getUnreadNotifications(Long userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return PaginatedResponse.from(
+                notificationRepository.findByRecipientIdAndIsReadFalseOrderByCreatedAtDesc(userId, pageable)
+                        .map(notificationMapper::toResponse)
+        );
     }
 
     @Override

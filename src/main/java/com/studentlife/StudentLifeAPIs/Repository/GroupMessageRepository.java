@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.time.Instant;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 @Repository
@@ -17,6 +18,9 @@ public interface GroupMessageRepository extends JpaRepository<GroupMessage, Long
 
     // Get all messages for a group, oldest first
     List<GroupMessage> findByAssignmentIdOrderByCreatedAtAsc(Long assignmentId);
+
+    // Paginated history for a group (order supplied via Pageable sort)
+    Page<GroupMessage> findByAssignmentId(Long assignmentId, Pageable pageable);
 
     // Get only the last message for a group (for preview)
     java.util.Optional<GroupMessage> findTopByAssignmentIdOrderByCreatedAtDesc(Long assignmentId);
