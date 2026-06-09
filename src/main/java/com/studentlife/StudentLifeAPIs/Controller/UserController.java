@@ -117,6 +117,19 @@ public class UserController {
         ));
     }
 
+    // ─── PUT /api/v1/users/{id}/enable ────────────────────────────────────
+    @PutMapping("/{id}/enable")
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<ApiResponse<Void>> enableUser(@PathVariable Long id) {
+        userService.enableUser(id);
+
+        return ResponseEntity.ok(new ApiResponse<>(
+                HttpStatus.OK.value(),
+                true,
+                "User enabled successfully."
+        ));
+    }
+
     // ─── DELETE /api/v1/users/{id} ───────────────────────────────────────────
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('admin')")

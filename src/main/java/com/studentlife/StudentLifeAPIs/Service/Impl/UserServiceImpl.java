@@ -149,6 +149,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    public void enableUser(Long id) {
+        Users user = findUserOrThrow(id);
+
+        if (Boolean.TRUE.equals(user.getIsActive())) {
+            throw new IllegalStateException("User is already active.");
+        }
+
+        user.setIsActive(true);
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
     public void deleteUser(Long id) {
         if (!userRepository.existsById(id)) {
             throw notFound("User not found with id: " + id);
