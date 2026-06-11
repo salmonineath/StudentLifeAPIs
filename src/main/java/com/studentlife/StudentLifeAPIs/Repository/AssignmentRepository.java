@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AssignmentRepository extends JpaRepository<Assignments, Long> {
@@ -31,6 +32,8 @@ public interface AssignmentRepository extends JpaRepository<Assignments, Long> {
     boolean existsByUser(Users user);
 
     List<Assignments> findByUser(Users user);
+
+    Optional<Assignments> findByShareToken(String shareToken);
 
     @Query("SELECT a FROM Assignments a WHERE a.dueDate BETWEEN :from AND :to AND a.status != :excludeStatus")
     List<Assignments> findDueWithin(

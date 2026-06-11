@@ -7,6 +7,8 @@ import com.studentlife.StudentLifeAPIs.DTO.Request.UpdateProgressRequest;
 import com.studentlife.StudentLifeAPIs.DTO.Response.ApiResponse;
 import com.studentlife.StudentLifeAPIs.DTO.Response.AssignmentMemberResponse;
 import com.studentlife.StudentLifeAPIs.DTO.Response.AssignmentResponse;
+import com.studentlife.StudentLifeAPIs.DTO.Response.InviteResponse;
+import com.studentlife.StudentLifeAPIs.DTO.Response.JoinResponse;
 import com.studentlife.StudentLifeAPIs.Entity.AssignmentMember;
 import com.studentlife.StudentLifeAPIs.Entity.Assignments;
 import com.studentlife.StudentLifeAPIs.Entity.GroupChatMember;
@@ -264,10 +266,18 @@ public class AssignmentServiceImpl implements AssignmentService {
 
         notificationService.sendNotification(notificationRequest, NotificationType.INVITE, invitedUser);
 
+        // Surface the invite link so the owner can copy and share it through
+        // another channel — kept identical to the accept link used in the email.
+        InviteResponse inviteResponse = InviteResponse.builder()
+                .email(invitedUser.getEmail())
+                .inviteLink(frontendUrl + "/invite/accept?token=" + member.getInviteToken())
+                .build();
+
         return new ApiResponse<>(
                 200,
                 true,
-                "Invitation sent successfully."
+                "Invitation sent successfully.",
+                inviteResponse
         );
     }
 
@@ -458,6 +468,107 @@ public class AssignmentServiceImpl implements AssignmentService {
         }
 
         return new RedirectView(frontendUrl + "/invite/result?status=declined&assignmentId=" + assignment.getId());
+    }
+
+    @Override
+    @Transactional
+    public ApiResponse<?> getInviteLink(Long assignmentId) {
+        Users currentUser = authUtil.getAuthenticatedUser();
+
+        Assignments assignment = assignmentRepository.findById(assignmentId)
+                .orElseThrow(() -> notFound("Assignment not found."));
+
+        if (!assignment.getUser().getId().equals(currentUser.getId())) {
+            throw forbidden("Only the owner can create an invite link.");
+        }
+
+        // Lazily mint the assignment-level share token the first time it's requested.
+        if (assignment.getShareToken() == null || assignment.getShareToken().isBlank()) {
+            assignment.setShareToken(UUID.randomUUID().toString());
+            assignmentRepository.save(assignment);
+        }
+
+        InviteResponse response = InviteResponse.builder()
+                .inviteLink(frontendUrl + "/invite/join?token=" + assignment.getShareToken())
+                .build();
+
+        return new ApiResponse<>(200, true, "Invite link ready.", response);
+    }
+
+    @Override
+    @Transactional
+    public ApiResponse<?> joinByShareToken(String token) {
+        Users currentUser = authUtil.getAuthenticatedUser();
+
+        Assignments assignment = assignmentRepository.findByShareToken(token)
+                .orElseThrow(() -> notFound("This invite link is not valid."));
+
+        Users owner = assignment.getUser();
+
+        // Owner opening their own link already has full access.
+        if (owner.getId().equals(currentUser.getId())) {
+            return new ApiResponse<>(200, true, "You already own this assignment.",
+                    JoinResponse.builder()
+                            .assignmentId(assignment.getId())
+                            .assignmentTitle(assignment.getTitle())
+                            .alreadyMember(true)
+                            .build());
+        }
+
+        AssignmentMember member = assignmentMemberRepository
+                .findByAssignmentIdAndUserId(assignment.getId(), currentUser.getId())
+                .orElse(null);
+
+        // Already an accepted member → idempotent, just send them in.
+        if (member != null && member.getStatus() == AssignmentMemberStatus.ACCEPTED) {
+            return new ApiResponse<>(200, true, "You're already a member.",
+                    JoinResponse.builder()
+                            .assignmentId(assignment.getId())
+                            .assignmentTitle(assignment.getTitle())
+                            .alreadyMember(true)
+                            .build());
+        }
+
+        // New member, or a previously invited/declined one accepting via the link.
+        if (member == null) {
+            member = AssignmentMember.builder()
+                    .assignment(assignment)
+                    .user(currentUser)
+                    .build();
+        }
+        member.setStatus(AssignmentMemberStatus.ACCEPTED);
+        assignmentMemberRepository.save(member);
+
+        addToGroupChat(assignment.getId(), owner, currentUser);
+
+        scheduleService.createAssignmentSchedule(
+                assignment.getTitle(),
+                assignment.getDescription(),
+                assignment.getStartDate(),
+                assignment.getDueDate(),
+                assignment.getId(),
+                currentUser
+        );
+
+        NotificationRequest notificationRequest = new NotificationRequest();
+        notificationRequest.setTitle("Invite Accepted");
+        notificationRequest.setMessage(currentUser.getFullname() + " joined \"" + assignment.getTitle() + "\".");
+        notificationRequest.setReferenceId(assignment.getId());
+        notificationRequest.setLink("/assignments/" + assignment.getId());
+        notificationService.sendNotification(notificationRequest, NotificationType.INVITE, owner);
+
+        emailService.sendInviteAcceptedEmail(
+                owner.getEmail(),
+                currentUser.getFullname(),
+                assignment.getTitle()
+        );
+
+        return new ApiResponse<>(200, true, "Joined assignment successfully.",
+                JoinResponse.builder()
+                        .assignmentId(assignment.getId())
+                        .assignmentTitle(assignment.getTitle())
+                        .alreadyMember(false)
+                        .build());
     }
 
     private void addToGroupChat(Long assignmentId, Users owner, Users invitee) {

@@ -2,6 +2,7 @@ package com.studentlife.StudentLifeAPIs.Controller;
 
 import com.studentlife.StudentLifeAPIs.DTO.Request.AssignmentRequest;
 import com.studentlife.StudentLifeAPIs.DTO.Request.InviteRequest;
+import com.studentlife.StudentLifeAPIs.DTO.Request.JoinRequest;
 import com.studentlife.StudentLifeAPIs.DTO.Request.UpdateProgressRequest;
 import com.studentlife.StudentLifeAPIs.DTO.Response.ApiResponse;
 import com.studentlife.StudentLifeAPIs.DTO.Response.AssignmentMemberResponse;
@@ -71,6 +72,22 @@ public class AssignmentController {
             @Valid @RequestBody InviteRequest request
     ) {
         return ResponseEntity.ok(assignmentService.inviteUser(assignmentId, request));
+    }
+
+    // Owner fetches (lazily generating) the assignment-level shareable invite link.
+    @GetMapping("/{assignmentId}/invite-link")
+    public ResponseEntity<ApiResponse<?>> getInviteLink(
+            @PathVariable Long assignmentId
+    ) {
+        return ResponseEntity.ok(assignmentService.getInviteLink(assignmentId));
+    }
+
+    // Any authenticated user joins an assignment by opening a shared invite link.
+    @PostMapping("/invite/join")
+    public ResponseEntity<ApiResponse<?>> joinByShareToken(
+            @Valid @RequestBody JoinRequest request
+    ) {
+        return ResponseEntity.ok(assignmentService.joinByShareToken(request.getToken()));
     }
 
     @PostMapping("/{assignmentId}/accept")

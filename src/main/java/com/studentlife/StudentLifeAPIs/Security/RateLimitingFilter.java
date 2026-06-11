@@ -36,7 +36,10 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     private static final Map<String, Limit> LIMITS = Map.of(
             "/api/v1/auth/login", new Limit(10, 60_000),
             "/api/v1/auth/register", new Limit(5, 60_000),
-            "/api/v1/auth/refresh-token", new Limit(30, 60_000)
+            "/api/v1/auth/refresh-token", new Limit(30, 60_000),
+            "/api/v1/auth/otp-request", new Limit(30, 60_000),
+            "/api/v1/auth/verify-otp", new Limit(30, 60_000),
+            "/api/v1/auth/reset-password", new Limit(30, 60_000)
     );
 
     // Evict idle keys once the map grows past this, to bound memory from spoofed IPs.

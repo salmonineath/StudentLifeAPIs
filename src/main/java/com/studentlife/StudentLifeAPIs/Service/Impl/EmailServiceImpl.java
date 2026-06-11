@@ -44,7 +44,7 @@ public class EmailServiceImpl implements EmailService {
                     <a href="%s"
                        style="background-color: #4F46E5; color: white; padding: 12px 24px;
                               text-decoration: none; border-radius: 6px; margin-right: 12px;">
-                       Accept
+                       Accept   
                     </a>
                     <a href="%s"
                        style="background-color: #e5e7eb; color: #374151; padding: 12px 24px;

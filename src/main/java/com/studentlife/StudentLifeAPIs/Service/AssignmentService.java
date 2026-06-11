@@ -33,4 +33,8 @@ public interface AssignmentService {
     ApiResponse<List<AssignmentMemberResponse>> getMembers(Long assignmentId);
 
     RedirectView processInviteToken(String token, boolean accept);
+
+    ApiResponse<?> getInviteLink(Long assignmentId);
+
+    ApiResponse<?> joinByShareToken(String token);
 }

@@ -56,6 +56,13 @@ public class Assignments {
     @Column(name = "schedule_id")
     private Long scheduleId;
 
+    // Assignment-level shareable invite token (Trello-style link). Generated lazily
+    // the first time the owner requests the invite link; any logged-in user who opens
+    // the link joins the assignment. Distinct from AssignmentMember.inviteToken, which
+    // is the per-user email-invite token.
+    @Column(name = "share_token", unique = true)
+    private String shareToken;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;
