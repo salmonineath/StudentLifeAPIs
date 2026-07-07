@@ -79,10 +79,10 @@ public class AssignmentReminderScheduler {
                 sendReminderEmail(assignment, label);
 
                 NotificationRequest notificationRequest = new NotificationRequest();
-                notificationRequest.setTitle("Assignment due in" + label);
+                notificationRequest.setTitle("Assignment due in " + label);
                 notificationRequest.setMessage("\"" + assignment.getTitle() + "\" is due in " + label + ". Progress: " +
                         assignment.getProgress() + "%");
-                notificationService.sendNotification(notificationRequest, NotificationType.REMINDER, assignment.getUser());
+                notificationService.sendNotification(notificationRequest, NotificationType.DEADLINE, assignment.getUser());
 
                 // Record that we sent it — prevents duplicate sends
                 reminderLogRepository.save(ReminderLog.builder()
